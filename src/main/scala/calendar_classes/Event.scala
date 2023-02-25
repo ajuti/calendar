@@ -2,14 +2,34 @@ package calendar_classes
 
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.Map
+import java.time.*
 
-class Event(private val name: String, private val time: String, private val tags: Map[String, Tag] = Map[String, Tag](), private var extraInfo: String = ""):
+class Event(private val name: String, private val startingTime: LocalDateTime, private val endingTime: LocalDateTime, stringTags: String = "", private var extraInfo: String = ""):
 
   private var bannerColor: Option[ColorTag] = None
 
+  private val tags: Map[String, Tag] = Map[String, Tag]()
+  if stringTags.nonEmpty then stringTags.split(", ").foreach(addTag(_))
+
   def getName = this.name
 
-  def getTime = this.time //FIXME: better formatting of the time later
+  def getWeek =
+    var offSet: Int = 0
+    startingTime.getDayOfWeek match
+      case DayOfWeek.MONDAY     =>
+      case DayOfWeek.TUESDAY    => offSet = 1
+      case DayOfWeek.WEDNESDAY  => offSet = 2
+      case DayOfWeek.THURSDAY   => offSet = 3
+      case DayOfWeek.FRIDAY     => offSet = 4
+      case DayOfWeek.SATURDAY   => offSet = 5
+      case DayOfWeek.SUNDAY     => offSet = 6
+    end match
+
+    1 + ((startingTime.getDayOfYear - offSet - 1) / 7)
+  end getWeek
+
+
+  def getTime: String = startingTime.toString + " - " + endingTime.toString
 
   def getColor: Option[ColorTag] = this.bannerColor
 
@@ -28,3 +48,7 @@ class Event(private val name: String, private val time: String, private val tags
   def getTags = this.tags.keys.mkString(", ")
 
   def addInfo(info: String) = this.extraInfo = info
+
+  def getInfo = this.extraInfo
+
+  override def toString = s"${this.name}"
