@@ -1,6 +1,6 @@
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
-import calendar_classes.{Calendar, ColorTag, Day, Event, Week}
+import calendar_classes.{Calendar, ColorTag, Day, Event, Week, Tag}
 import java.time.*
 
 class EventTest extends AnyFlatSpec, Matchers:
@@ -10,7 +10,8 @@ class EventTest extends AnyFlatSpec, Matchers:
 
   "setColor" should "assign a ColorTag to an event" in {
     subject.setColor(ColorTag(10,10,10))
-    subject.getColor.nonEmpty
+    assert(subject.getColor.nonEmpty)
+    println(subject.getColor)
   }
   "removeColor" should "remove a color from bannerColor" in {
     subject.removeColor()
@@ -40,7 +41,7 @@ end EventTest
 
 
 class CalendarTest extends AnyFlatSpec, Matchers:
-  val subject = new Calendar
+  val subject = Calendar()
   val startingTime = LocalDateTime.of(2023, 01, 01, 10, 00)
   val endingTime = LocalDateTime.of(2023, 01, 01, 16, 30)
 
@@ -70,7 +71,6 @@ class CalendarTest extends AnyFlatSpec, Matchers:
     subject.deleteEvent(e1)
     println(subject.searchEvents("yksi"))
   }
-
 
 end CalendarTest
 

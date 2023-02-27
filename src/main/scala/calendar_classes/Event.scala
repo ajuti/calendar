@@ -28,6 +28,7 @@ class Event(private val name: String, private val startingTime: LocalDateTime, p
     1 + ((startingTime.getDayOfYear - offSet - 1) / 7)
   end getWeek
 
+  def getDay = startingTime.getDayOfYear
 
   def getTime: String = startingTime.toString + " - " + endingTime.toString
 

@@ -2,7 +2,7 @@ package calendar_classes
 
 import java.awt.Color
 
-case class Tag(val tagName: String):
+class Tag(val tagName: String):
   override def toString = this.tagName
 end Tag
 
