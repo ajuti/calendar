@@ -44,6 +44,8 @@ class CalendarTest extends AnyFlatSpec, Matchers:
   val subject = Calendar()
   val startingTime = LocalDateTime.of(2023, 01, 01, 10, 00)
   val endingTime = LocalDateTime.of(2023, 01, 01, 16, 30)
+  val start2 = LocalDateTime.of(2023, 12, 31, 10, 00)
+  val end2 = LocalDateTime.of(2023, 12, 31, 12, 15)
 
   "addEvent and deleteEvent" should "create and add an Event to the calendar, and remove the Event from list of all events" in {
     val myEvent = Event("chess", startingTime, endingTime,  "moro, shakki, aarni")
@@ -70,6 +72,15 @@ class CalendarTest extends AnyFlatSpec, Matchers:
     println(subject.searchEvents("moro"))
     subject.deleteEvent(e1)
     println(subject.searchEvents("yksi"))
+  }
+  "Week" should "contain correct events" in {
+    val cal2 = Calendar()
+    cal2.addEvent(Event("koulu", startingTime, endingTime))
+    cal2.addEvent(Event("työt", start2, end2))
+
+    println(cal2.getCurrentWeek)
+    println(cal2.getCurrentDay)
+    println(cal2.getYear)
   }
 
 end CalendarTest

@@ -1,5 +1,7 @@
 package calendar_classes
 
+import calendar_classes.service.GetWeek
+
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.Map
 import java.time.*
@@ -13,20 +15,7 @@ class Event(private val name: String, private val startingTime: LocalDateTime, p
 
   def getName = this.name
 
-  def getWeek =
-    var offSet: Int = 0
-    startingTime.getDayOfWeek match
-      case DayOfWeek.MONDAY     =>
-      case DayOfWeek.TUESDAY    => offSet = 1
-      case DayOfWeek.WEDNESDAY  => offSet = 2
-      case DayOfWeek.THURSDAY   => offSet = 3
-      case DayOfWeek.FRIDAY     => offSet = 4
-      case DayOfWeek.SATURDAY   => offSet = 5
-      case DayOfWeek.SUNDAY     => offSet = 6
-    end match
-
-    1 + ((startingTime.getDayOfYear - offSet - 1) / 7)
-  end getWeek
+  def getWeek = GetWeek.getWeek2(startingTime)
 
   def getDay = startingTime.getDayOfYear
 

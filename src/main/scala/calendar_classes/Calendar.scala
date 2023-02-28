@@ -1,10 +1,24 @@
 package calendar_classes
 
+import calendar_classes.service.GetWeek
+import calendar_classes.{Week, Day}
+
 import java.time.LocalDateTime
 import scala.collection.mutable.Buffer
 
 class Calendar:
   private val events = Buffer[Event]()
+  private var currentDay = LocalDateTime.of(2021, 1, 1, 10, 00)
+  private var currentWeek: Week = Week(this, getWeekIndex, getYear) //FIXME: whole year/week still needs to be fixed
+  private var weekIndex = getWeekIndex
+
+  def getWeekIndex = GetWeek.getWeek2(currentDay)
+
+  def getYear = currentDay.getYear
+
+  def getCurrentDay = currentDay.getDayOfMonth + currentDay.getMonth.toString
+
+  def getCurrentWeek = this.currentWeek
 
   def getAllEvents = this.events
 
@@ -19,7 +33,9 @@ class Calendar:
   def searchByTags(tag: Tag): Buffer[Event] =
     events.filter(x => x.getTags.contains(tag.tagName))
 
-  def showNextWeek() = ???
+  def showNextWeek() =
+
+    currentWeek = Week(this, this.getWeekIndex, this.getYear)
 
   def showPreviousWeek() = ???
 
@@ -27,17 +43,4 @@ class Calendar:
 
   def showPreviousDay() = ???
 
-
 end Calendar
-
-class Week(calendar: Calendar, private val weekNum: Int):
-  private val events = calendar.getAllEvents.filter(x => x.getWeek == weekNum)
-
-  override def toString = s"Week $weekNum"
-end Week
-
-class Day(calendar: Calendar, private val day: LocalDateTime):
-  private val events = calendar.getAllEvents.filter(x => x.getDay == day.getDayOfYear)
-
-  override def toString = s"${day.getDayOfMonth} of ${day.getMonth}"
-end Day
