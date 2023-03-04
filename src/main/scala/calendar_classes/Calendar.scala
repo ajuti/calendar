@@ -8,21 +8,29 @@ import scala.collection.mutable.Buffer
 
 class Calendar:
   private val events = Buffer[Event]()
-  private var currentDay = LocalDateTime.of(2021, 1, 1, 10, 00)
-  private var currentWeek: Week = Week(this, getWeekIndex, getYear) //FIXME: whole year/week still needs to be fixed
+  private var currentDay = Day(this, LocalDateTime.now())
   private var weekIndex = getWeekIndex
+  private var yearIndex = currentDay.getLdt.getYear
+  private var currentWeek: Week = Week(this, getWeekIndex, getYear)
+  
+  def getWeekIndex = GetWeek.getWeek2(currentDay.getLdt)
 
-  def getWeekIndex = GetWeek.getWeek2(currentDay)
+  def getWeek = this.currentWeek
 
-  def getYear = currentDay.getYear
+  def getYear = yearIndex
 
-  def getCurrentDay = currentDay.getDayOfMonth + currentDay.getMonth.toString
+  def getCurrentDay = currentDay.getLdt.getDayOfMonth + currentDay.getLdt.getMonth.toString
 
   def getCurrentWeek = this.currentWeek
 
   def getAllEvents = this.events
 
-  def addEvent(event: Event) = events.addOne(event)
+  def addEvent(event: Event): Unit = 
+    events.addOne(event)
+    if event.getWeek == this.currentWeek.getWeekNum then
+      this.currentWeek.addEvent(event)
+    if event.getStart.toLocalDate() == this.currentDay.getLdt.toLocalDate() then
+      this.currentDay.addEvent(event)
 
   def deleteEvent(event: Event) = events.remove(events.indexOf(event))
 
@@ -34,10 +42,16 @@ class Calendar:
     events.filter(x => x.getTags.contains(tag.tagName))
 
   def showNextWeek() =
+    if weekIndex == 53 || GetWeek.weeksInAYear(currentDay.getLdt) == 52 then
+      weekIndex = 1
+      yearIndex += 1
+    else
+      weekIndex = 53
+    currentWeek = Week(this, weekIndex, yearIndex)
+    currentDay = Day(this, currentDay.getLdt.plusDays(7))
+  end showNextWeek
 
-    currentWeek = Week(this, this.getWeekIndex, this.getYear)
-
-  def showPreviousWeek() = ???
+  def showPreviousWeek() = ???   
 
   def showNextDay() = ???
 

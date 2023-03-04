@@ -13,6 +13,8 @@ class Event(private val name: String, private val startingTime: LocalDateTime, p
   private val tags: Map[String, Tag] = Map[String, Tag]()
   if stringTags.nonEmpty then stringTags.split(", ").foreach(addTag(_))
 
+  def getStart = this.startingTime
+
   def getName = this.name
 
   def getWeek = GetWeek.getWeek2(startingTime)

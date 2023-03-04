@@ -1,11 +1,12 @@
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import calendar_classes.{Calendar, ColorTag, Day, Event, Week, Tag}
+import calendar_classes.service._
 import java.time.*
 
 class EventTest extends AnyFlatSpec, Matchers:
-  val startingTime = LocalDateTime.of(2023, 03, 27, 10, 00)
-  val endingTime = LocalDateTime.of(2023, 01, 01, 16, 30)
+  val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
+  val endingTime = LocalDateTime.of(2023, 1, 1, 16, 30)
   val subject = Event("work", startingTime, endingTime)
 
   "setColor" should "assign a ColorTag to an event" in {
@@ -42,9 +43,9 @@ end EventTest
 
 class CalendarTest extends AnyFlatSpec, Matchers:
   val subject = Calendar()
-  val startingTime = LocalDateTime.of(2023, 01, 01, 10, 00)
-  val endingTime = LocalDateTime.of(2023, 01, 01, 16, 30)
-  val start2 = LocalDateTime.of(2023, 12, 31, 10, 00)
+  val startingTime = LocalDateTime.of(2023, 1, 1, 10, 0)
+  val endingTime = LocalDateTime.of(2023, 1, 1, 16, 30)
+  val start2 = LocalDateTime.of(2023, 12, 31, 10, 0)
   val end2 = LocalDateTime.of(2023, 12, 31, 12, 15)
 
   "addEvent and deleteEvent" should "create and add an Event to the calendar, and remove the Event from list of all events" in {
@@ -82,6 +83,65 @@ class CalendarTest extends AnyFlatSpec, Matchers:
     println(cal2.getCurrentDay)
     println(cal2.getYear)
   }
+  "week" should "be correctly moved forward" in {
+    val cal2 = Calendar()
+    println(cal2.getCurrentWeek)
+    println(cal2.getCurrentDay)
+    println(cal2.getYear)
+    cal2.showNextWeek()
+    println(cal2.getCurrentWeek)
+    println(cal2.getCurrentDay)
+    println(cal2.getYear)
+
+  }
+  "Calendar" should "display correct events in current week" in{
+    // First we initiate a calendar object
+    val calendar = Calendar()
+    // calendar should be initialized with currently ongoing week
+    println(calendar.getWeek)
+    // and event added to current week should show in all of calendars events
+    // as well as in the week's events
+    calendar.addEvent(Event("koulu", LocalDateTime.of(2023, 3, 4, 12, 0), LocalDateTime.of(2023, 3, 4, 13, 0), "fysiikka", "kandikeskus, luokka Y308"))
+    calendar.addEvent(Event("duuni", LocalDateTime.of(2023, 3, 11, 12, 0), LocalDateTime.of(2023, 3, 11, 16, 0), "jutiland"))
+    println(calendar.getAllEvents) 
+    println(calendar.getWeek.getEvents)
+    // calendar should change the week forward and show the next week's event in current events as well as all events
+    calendar.showNextWeek()
+    println(calendar.getAllEvents) 
+    println(calendar.getWeek.getEvents)
+  }
 
 end CalendarTest
+
+class ServiceTest extends AnyFlatSpec, Matchers:
+  val subject = GetWeek
+
+  "nextOrdinalToLDT" should "return a correct new date when given an offset" in {
+    val today = LocalDateTime.now()
+    println(today)
+    // standard case of shifting date in the middle of the year
+    // first forwards:
+    println(subject.nextOrdinalToLDT(today, 1))
+    // then backwards:
+    println(subject.nextOrdinalToLDT(today, -3))
+    
+    // FIXME: hopping years still broken
+    // edge case where the year changes from December of X to January of X + 1
+    val endOfYear = LocalDateTime.of(2022, 12, 29, 10, 0)
+    println("should be 31st and 2nd")
+    println(subject.nextOrdinalToLDT(endOfYear, 2))
+    println(subject.nextOrdinalToLDT(endOfYear, 3))
+    println(endOfYear.plusDays(3))
+
+    // edge case where the year changes from January of X back to December of X - 1
+    val startOfYear = LocalDateTime.of(2023, 1, 3, 10, 0)
+    println(subject.nextOrdinalToLDT(startOfYear, -7))
+  }
+
+class LDTTest extends AnyFlatSpec, Matchers:
+  val ldt1 = LocalDateTime.of(2023, 10, 10, 10, 10)
+  val ldt2 = LocalDateTime.of(2023, 10, 10, 10, 11)
+  "compareTo" should "return boolean between these LDTs" in {
+    println(ldt1.equals(ldt2))
+  }
 
