@@ -25,6 +25,11 @@ class EventTest extends AnyFlatSpec, Matchers:
     subject.addTag("school")
     subject.addTag("gym")
   }
+  "removeTag" should "remove tags if possible" in {
+    subject.removeTag("gym")
+    subject.removeTag("xdd")
+    println(subject.getTags)
+  }
   "getTags" should "return all tags as a string" in {
     println(subject.getTags)
   }
@@ -53,9 +58,10 @@ class CalendarTest extends AnyFlatSpec, Matchers:
     subject.addEvent(myEvent)
     assert(subject.getAllEvents.size === 1)
     println(subject.getAllEvents.head)
-
+    
     subject.deleteEvent(myEvent)
     assert(subject.getAllEvents.isEmpty)
+
   }
   val e1 = Event("yksi", startingTime, endingTime, "moro")
   val e2 = Event("kaksi", startingTime, endingTime, "moro")
@@ -81,34 +87,50 @@ class CalendarTest extends AnyFlatSpec, Matchers:
 
     println(cal2.getCurrentWeek)
     println(cal2.getCurrentDay)
-    println(cal2.getYear)
+    println(cal2.getCurrentDay.getYear())
   }
   "week" should "be correctly moved forward" in {
     val cal2 = Calendar()
     println(cal2.getCurrentWeek)
     println(cal2.getCurrentDay)
-    println(cal2.getYear)
+    println(cal2.getCurrentDay.getYear())
     cal2.showNextWeek()
     println(cal2.getCurrentWeek)
     println(cal2.getCurrentDay)
-    println(cal2.getYear)
+    println(cal2.getCurrentDay.getYear())
 
+  }
+  "week and day" should "be correctly moved backward" in {
+    val cal = Calendar()
+    println("Initial week and day: " + cal.getCurrentWeek.toString + " " + cal.getCurrentDay.toString())
+    cal.showPreviousWeek()
+    println("Previous week and day: " + cal.getCurrentWeek.toString + " " + cal.getCurrentDay.toString() + "\n")
+    // Edge case where previous week is in the last year
   }
   "Calendar" should "display correct events in current week" in{
     // First we initiate a calendar object
     val calendar = Calendar()
     // calendar should be initialized with currently ongoing week
-    println(calendar.getWeek)
+    println(calendar.getCurrentWeek)
     // and event added to current week should show in all of calendars events
     // as well as in the week's events
     calendar.addEvent(Event("koulu", LocalDateTime.of(2023, 3, 4, 12, 0), LocalDateTime.of(2023, 3, 4, 13, 0), "fysiikka", "kandikeskus, luokka Y308"))
-    calendar.addEvent(Event("duuni", LocalDateTime.of(2023, 3, 11, 12, 0), LocalDateTime.of(2023, 3, 11, 16, 0), "jutiland"))
+    calendar.addEvent(Event("duuni", LocalDateTime.of(2023, 3, 10, 12, 0), LocalDateTime.of(2023, 3, 11, 16, 0), "jutiland"))
     println(calendar.getAllEvents) 
-    println(calendar.getWeek.getEvents)
+    println(calendar.getCurrentWeek.getEvents)
     // calendar should change the week forward and show the next week's event in current events as well as all events
     calendar.showNextWeek()
+    println(calendar.getCurrentWeek)
     println(calendar.getAllEvents) 
-    println(calendar.getWeek.getEvents)
+    println(calendar.getCurrentWeek.getEvents)
+    calendar.showNextWeek()
+    println(calendar.getCurrentWeek)
+    println(calendar.getCurrentWeek.getEvents)
+    // calendar should move backwards and show correct events
+    calendar.showPreviousWeek()
+    println(calendar.getCurrentWeek.getEvents)
+    calendar.showPreviousWeek()
+    println(calendar.getCurrentWeek.getEvents)
   }
 
 end CalendarTest

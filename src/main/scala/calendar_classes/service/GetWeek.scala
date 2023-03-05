@@ -44,21 +44,16 @@ object GetWeek:
     def p(y: Int) = (y + (y / 4.0).floor - (y / 100.0).floor + (y / 400.0).floor) % 7
 
     if p(ordinalYear) == 4 || p(ordinalYear - 1) == 3 then 53 else 52
+  end weeksInAYear
+
+  def weeksInAYear(year: Int) = 
+    def p(y: Int) = (y + (y / 4.0).floor - (y / 100.0).floor + (y / 400.0).floor) % 7
+
+    if p(year) == 4 || p(year - 1) == 3 then 53 else 52
+  end weeksInAYear
 
 
-  def getOrdinalDayNum(date: LocalDateTime, daysMoved: Int) =
-    val addDays = date.getDayOfYear - daysMoved
-    if this.isLeapYear(date.getYear()) then
-      if addDays <= 0 then 366 + addDays
-      else if addDays >= 366 then addDays - 366
-      else addDays
-    else
-      if addDays <= 0 then 365 + addDays
-      else if addDays >= 365 then addDays - 365
-      else addDays
 
-
-      
   // Edit: After figuring this method out for calculating new LocalDateTime object when shiting days,
   // I discovered that LocalDateTime has already has a method for it...
   // Just leaving this here to remind that maybe I should read the documentation properly next time :)
