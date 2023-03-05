@@ -3,7 +3,7 @@ import calendar_classes.Calendar
 import scala.collection.mutable.Buffer
 
 class Week(calendar: Calendar, private val weekNum: Int, private val year: Int):
-  private val events = calendar.getAllEvents.filter(x => x.getWeek == weekNum)
+  private val events = calendar.getAllEvents.filter(x => x.getWeek == weekNum && x.getStart.getYear() == year)
   
   def getYearNum: Int = this.year
 

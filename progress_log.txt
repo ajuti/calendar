@@ -1,0 +1,30 @@
+#### START Log entry 6.3.2023 ####
+
+First iteration of the whole backend has been implemented mostly:
+Main libraries used here are java.time as well as jawa.awt.Color
+Java.time provides LocalDateTime, which is used as a timestamp. 
+
+- Calendar is the main class that models the calendar as a whole
+    - It knows all of the events added to it, and it instantiates with Day and Week objects as its current internal state
+
+- Day-object models a single day, and it knows all events scheduled for itself. Day takes LocalDateTime object as a parameter which is used to track time.
+
+- Similar to Day, Week models a single week, it knows all events scheduled for that week, and its own weeknumber and year.
+
+- Event models a single event, it takes LocalDateTimes as starting- and endingtime variables. Events can also optionally be given extra info and one or more Tags.
+  Events can be added to calendar as well as to the current day/week if the added event happens to be in said day/week.
+
+- Tags are objects that store a name and are given to events. These will be utilized more when implementing gui.
+
+- GetWeek and DateAndWeekGen are service classes used to compute calculations used by multiple classes.
+    - As java.time doesn't have method to return the week number, GetWeek's main job is to compute said week number, which is used with Week-object
+    - DateAndWeekGen just generates new Day and Week objects which are used to update internal state of Calendar. Four different methods need to update the state so 
+      I made it into a service class to not clutter the class
+
+Tests have been used pretty extensively and most of the programming has been Test-Driven and if I've not missed anything, every currently implemented method should've
+been tested with a unit test.
+
+Workload is hard to approximate, but my best guess for everything so far is around 15 hours, spent between developing and researching documentation etc.
+All in all, I'm ahead of my initial schedule.
+
+#### END Log entry 6.3.2023 ####

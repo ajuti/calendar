@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import scala.collection.mutable.Buffer
 
 class Day(calendar: Calendar, private val date: LocalDateTime):
-  private val events = calendar.getAllEvents.filter(x => x.getDay == date.getDayOfYear)
+  private val events = calendar.getAllEvents.filter(x => x.getDay == date.getDayOfYear && x.getStart.getYear() == date.getYear())
 
   def getLdt: LocalDateTime = this.date
 

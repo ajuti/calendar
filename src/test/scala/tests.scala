@@ -50,8 +50,8 @@ end EventTest
 
 class CalendarTest extends AnyFlatSpec, Matchers:
   val subject = Calendar()
-  val startingTime = LocalDateTime.of(2023, 1, 1, 10, 0)
-  val endingTime = LocalDateTime.of(2023, 1, 1, 16, 30)
+  val startingTime = LocalDateTime.of(2023, 3, 5, 10, 0)
+  val endingTime = LocalDateTime.of(2023, 3, 5, 16, 30)
   val start2 = LocalDateTime.of(2023, 12, 31, 10, 0)
   val end2 = LocalDateTime.of(2023, 12, 31, 12, 15)
 
@@ -90,6 +90,12 @@ class CalendarTest extends AnyFlatSpec, Matchers:
     println(cal2.getCurrentWeek)
     println(cal2.getCurrentDay)
     println(cal2.getCurrentDay.getYear())
+
+    println(cal2.getCurrentWeek.getEvents)
+    for c <- 1 to 52 do
+      cal2.showNextWeek()
+
+    println(cal2.getCurrentWeek.getEvents)
   }
   "week" should "be correctly moved forward" in {
     val cal2 = Calendar()

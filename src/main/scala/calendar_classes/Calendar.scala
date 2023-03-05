@@ -39,7 +39,7 @@ class Calendar:
   // Adds new event to list of all events as well as the current Day and Week if event is scheduled for current Day/Week
   def addEvent(event: Event): Unit = 
     events.addOne(event)
-    if event.getWeek == this.currentWeek.getWeekNum then
+    if event.getWeek == this.currentWeek.getWeekNum && event.getStart.getYear() == this.currentDay.getLdt.getYear() then
       this.currentWeek.addEvent(event)
     if event.getStart.toLocalDate() == this.currentDay.getLdt.toLocalDate() then
       this.currentDay.addEvent(event)
@@ -48,7 +48,7 @@ class Calendar:
   // Deletes events from calendar and current Day/Week
   def deleteEvent(event: Event) = 
     events.remove(events.indexOf(event))
-    if event.getWeek == this.currentWeek.getWeekNum then
+    if event.getWeek == this.currentWeek.getWeekNum && event.getStart.getYear() == this.currentDay.getLdt.getYear() then
       this.currentWeek.deleteEvent(event)
     if event.getStart.toLocalDate() == this.currentDay.getLdt.toLocalDate() then
       this.currentDay.deleteEvent(event)
