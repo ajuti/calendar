@@ -1,0 +1,17 @@
+instatiating Calendar
+=> adding events to Calendar
+    => which subsequently will be added to Day and Week objects assuming they're current Day/Week
+    => Events can be queried via tags (tagNames, which are strings), and via pure string inputs which will
+       query all events based on their title, tags and additional information
+
+=> Week/Day can be moved forwards or backwards
+    => Done by updating Calendars internal state variables with new objects
+        => currentWeek holds a Week-object and currentDay holds Day-object
+            => Day takes a LocalDateTime as a parameter and hold information of its
+               year, month, day, hour and minute in that object
+
+=> Events hold information about its starting- and endingtimes in LocalDateTime-objects,
+   title, additional info, and color
+    => Color is stored into Option[Color]
+        => color can be set with either hexcode or rgb input, and a java.awt.Color -object will be created
+            and set as a value of the Option

@@ -61,7 +61,7 @@ class Calendar:
   // E.g. given tag: Work, it will only show events tagged with Work, not events that
   // have "Work" in their title, but not Work as a tag 
   def searchEvents(filter: String): Buffer[Event] =
-    events.filter(x => x.getName.contains(filter) || x.getTags.contains(filter))
+    events.filter(x => x.getName.contains(filter) || x.getTags.contains(filter) || x.getInfo.contains(filter))
   end searchEvents
 
   def searchByTags(tag: Tag): Buffer[Event] =

@@ -5,12 +5,13 @@ import calendar_classes.service.GetWeek
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.Map
 import java.time.*
+import java.awt.Color
 
 class Event(private val name: String, private val startingTime: LocalDateTime, private val endingTime: LocalDateTime, stringTags: String = "", private var extraInfo: String = ""):
 
   // Keeps track of which color the event should be displayed with
-  // ColorTag object can store hexcode values, or RGB
-  private var bannerColor: Option[ColorTag] = None
+  // ColorTag object can store Colorhexcode values, or RGB
+  private var bannerColor: Option[Color] = None
 
   // Stores all Tags in a Map
   private val tags: Map[String, Tag] = Map[String, Tag]()
@@ -29,10 +30,12 @@ class Event(private val name: String, private val startingTime: LocalDateTime, p
   // String representation of the timeperiod of the event
   def getTime: String = startingTime.toString + " - " + endingTime.toString
 
-  def getColor: Option[ColorTag] = this.bannerColor
+  def getColor: Option[Color] = this.bannerColor
 
   // Sets the color for this event
-  def setColor(colorTag: ColorTag) = this.bannerColor = Some(colorTag)
+  def setColor(hexcode: String) = this.bannerColor = Some(Color.decode(hexcode))
+
+  def setColor(r: Int, g: Int, b: Int) = this.bannerColor = Some(Color(r, g, b))
 
   def removeColor() = this.bannerColor = None
 
