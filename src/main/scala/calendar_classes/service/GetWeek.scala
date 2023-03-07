@@ -54,7 +54,7 @@ object GetWeek:
 
 
 
-  // Edit: After figuring this method out for calculating new LocalDateTime object when shiting days,
+  // Edit: After figuring this method out for calculating new LocalDateTime object when shifting days,
   // I discovered that LocalDateTime has already has a method for it...
   // Just leaving this here to remind that maybe I should read the documentation properly next time :)
 

@@ -17,7 +17,20 @@ class Event(private val name: String, private var interval: Interval, stringTags
   private val tags: Map[String, Tag] = Map[String, Tag]()
   if stringTags.nonEmpty then stringTags.split(", ").foreach(addTag(_))
 
-  def setTime(newStartAndEnd: (LocalDateTime, LocalDateTime)) = ???
+  def setTimeWithHours(start: Int, end: Int) = 
+    interval = Interval(interval.start.plusHours(start), interval.`end`.plusHours(`end`))
+  end setTimeWithHours
+
+  def setTimeWithHours(hours: Int) = 
+    interval = Interval(interval.start.plusHours(hours), interval.`end`.plusHours(hours))
+  end setTimeWithHours
+
+  def setTimeWithDays(days: Int) = 
+    interval = Interval(interval.start.plusDays(days), interval.`end`.plusDays(days))
+  end setTimeWithDays
+
+  def setTimeWithLDT(date: LocalDateTime) =  
+    interval = Interval(date, date.plusMinutes(interval.lengthInMinutes))
 
   def getInterval = this.interval
 

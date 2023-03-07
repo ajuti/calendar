@@ -1,7 +1,10 @@
 package calendar_classes
 
 import java.time.LocalDateTime
+import java.time.temporal.TemporalUnit
+import java.time.temporal.ChronoUnit
 
+// Class structure is mostly pulled from earlier O1-course exercise and refactored to use LocalDateTimes instead of Moments like in the original
 class Interval(val start: LocalDateTime, val end: LocalDateTime):  
        
     // checks if this Interval contains given date
@@ -17,7 +20,11 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
     // checks if two Intervals overlap e.g. 1-5 overlaps with 3-7
     def overlaps(another: Interval): Boolean = this.contains(another.start) || another.contains(this.end) || this.contains(another.end)
 
-    def length: Int = this.start.compareTo(this.end)
+    def lengthInHours: Long = this.start.until(this.`end`, ChronoUnit.HOURS)
+
+    def lengthInDays: Long = this.start.until(this.`end`, ChronoUnit.DAYS)
+
+    def lengthInMinutes: Long = this.start.until(this.`end`, ChronoUnit.MINUTES)
 
     // checks whether two intervals intersect each other
     def intersects(interval: Interval): Boolean = 

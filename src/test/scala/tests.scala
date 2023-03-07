@@ -96,26 +96,38 @@ class LDTTest extends AnyFlatSpec, Matchers:
   }
 
 class IntervalTest extends AnyFlatSpec, Matchers:
-  val interval = Interval(LocalDateTime.of(2023, 1, 3, 0, 0), LocalDateTime.of(2023, 1, 7, 23, 59))
-  // Whole event is inside the interval | true
-  val event1 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 6, 10, 0))
-  // The event is on the first day of the interval | true
-  val event2 = Interval(LocalDateTime.of(2023, 1, 3, 10, 0), LocalDateTime.of(2023, 1, 3, 12, 0))
-  // The event is on the last day of the interval | true
-  val event3 = Interval(LocalDateTime.of(2023, 1, 7, 10, 0), LocalDateTime.of(2023, 1, 7, 15, 0))
-  // Event is outside of the interval | false
-  val event4 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 2, 10, 0))
-  // Event start is in but end is outside of the interval | true
-  val event5 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 9, 10, 0))
-  // Event start is out but end is outside of the interval | true
-  val event6 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 4, 10, 0))
+  "intersect" should "return true if two intervals either contain or overlap each other" in {
+    val interval = Interval(LocalDateTime.of(2023, 1, 3, 0, 0), LocalDateTime.of(2023, 1, 7, 23, 59))
+    // Whole event is inside the interval | true
+    val event1 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 6, 10, 0))
+    // The event is on the first day of the interval | true
+    val event2 = Interval(LocalDateTime.of(2023, 1, 3, 10, 0), LocalDateTime.of(2023, 1, 3, 12, 0))
+    // The event is on the last day of the interval | true
+    val event3 = Interval(LocalDateTime.of(2023, 1, 7, 10, 0), LocalDateTime.of(2023, 1, 7, 15, 0))
+    // Event is outside of the interval | false
+    val event4 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 2, 10, 0))
+    // Event start is in but end is outside of the interval | true
+    val event5 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 9, 10, 0))
+    // Event start is out but end is outside of the interval | true
+    val event6 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 4, 10, 0))
+    // Event starts and ends outside the interval | true
+    val event7 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 16, 10, 0))
 
-  println(interval.intersects(event1))
-  println(interval.intersects(event2))
-  println(interval.intersects(event3))
-  println(interval.intersects(event4))
-  println(interval.intersects(event5))
-  println(interval.intersects(event6))
+    println(interval.intersects(event1))
+    println(interval.intersects(event2))
+    println(interval.intersects(event3))
+    println(interval.intersects(event4))
+    println(interval.intersects(event5))
+    println(interval.intersects(event6))
+    println(interval.intersects(event7))
+  }
+
+  "length" should "tell correct length of an interval" in {
+    val interval = Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(6))
+    println(interval.lengthInHours)
+    println(interval.lengthInDays)
+    println(interval.lengthInMinutes)
+  }
 
 
 end IntervalTest

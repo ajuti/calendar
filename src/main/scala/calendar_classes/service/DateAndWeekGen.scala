@@ -26,6 +26,16 @@ class DateAndWeekGen:
             case DayOfWeek.SUNDAY   => Interval(date.minusDays(6).withHour(0).withMinute(0), date.withHour(23).withMinute(59)) 
     end genWeekInterval
 
+    // another way to get the same interval as above, for fun
+    def genWeekIntervalByLoop(date: LocalDateTime): Interval =
+        var dateInLoop = date 
+        while dateInLoop.getDayOfWeek() != DayOfWeek.MONDAY do
+            dateInLoop.minusDays(1)
+        end while
+        Interval(dateInLoop.withHour(0).withMinute(0), dateInLoop.plusDays(6).withHour(23).withMinute(59))
+    end genWeekIntervalByLoop
+
+
     def genDayInterval(date: LocalDateTime): Interval = 
         Interval(date.withHour(0).withMinute(0), date.withHour(23).withMinute(59))
     end genDayInterval

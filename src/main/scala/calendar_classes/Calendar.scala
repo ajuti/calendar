@@ -17,7 +17,7 @@ class Calendar:
   
   // Returns the index of the week (1 to 52 or 53 depending on leap years)
   // Utilizes GetWeek -serviceobject, which calculates week number, given the LocalDateTime
-  def getWeekIndex = GetWeek.getWeek2(currentDay.getLdt)
+  def getWeekIndex = GetWeek.getWeek2(currentWeek.getInterval.start)
 
   def getCurrentDay = this.currentDay
 
@@ -28,9 +28,10 @@ class Calendar:
   def getAllEvents: Buffer[Event] = this.events
 
   // Sets new Day and Week objects to the mutable variables keeping track of said values
-  def setDayAndWeek(day: Day, week: Week) = 
-    this.currentDay = day
-    this.currentWeek = week
+  def setDayAndWeek(date: LocalDateTime) = 
+    val gen = new DateAndWeekGen()
+    this.currentDay = Day(this, gen.genDayInterval(date))
+    this.currentWeek = Week(this, gen.genWeekInterval(currentDay.getLdt))
   end setDayAndWeek
 
   // Adds new event to list of all events as well as the current Day and Week if event is scheduled for current Day/Week
@@ -75,7 +76,7 @@ class Calendar:
   def showPreviousWeek() = 
     val gen = new DateAndWeekGen()
     currentWeek = gen.newWeek(this, currentWeek.getInterval, -7)
-    currentDay =  gen.newDay(this, 7)
+    currentDay = gen.newDay(this, -7)
   end showPreviousWeek
 
   def showNextDay() = 
