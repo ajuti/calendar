@@ -7,15 +7,14 @@ import scala.collection.mutable.Map
 import java.time.*
 import java.awt.Color
 
-class Event(private val name: String, private var interval: Interval, stringTags: String = "", private var extraInfo: String = ""):
+class Event(private val name: String, private var interval: Interval, stringTags: String = "", private var extraInfo: String = "", private var bannerColor: Option[Color] = None):
 
-  // Keeps track of which color the event should be displayed with
+  // BannerColor keeps track of which color the event should be displayed with
   // ColorTag object can store Colorhexcode values, or RGB
-  private var bannerColor: Option[Color] = None
 
   // Stores all Tags in a Map
   private val tags: Map[String, Tag] = Map[String, Tag]()
-  if stringTags.nonEmpty then stringTags.split(", ").foreach(addTag(_))
+  if stringTags.nonEmpty then stringTags.split("-").foreach(addTag(_))
 
   def setTimeWithHours(start: Int, end: Int) = 
     interval = Interval(interval.start.plusHours(start), interval.`end`.plusHours(`end`))
@@ -41,6 +40,12 @@ class Event(private val name: String, private var interval: Interval, stringTags
 
   def getColor: Option[Color] = this.bannerColor
 
+  def getColorString: String =
+    this.bannerColor match
+      case None => ""
+      case Some(color) => s"${color.getRed()}-${color.getGreen()}-${color.getBlue()}"
+  end getColorString
+
   // Sets the color for this event
   def setColor(hexcode: String) = this.bannerColor = Some(Color.decode(hexcode))
 
@@ -53,7 +58,7 @@ class Event(private val name: String, private var interval: Interval, stringTags
 
   def removeTag(name: String) = this.tags.remove(name)
 
-  def getTags = this.tags.keys.mkString(", ")
+  def getTags = this.tags.keys.mkString(";")
 
   def addInfo(info: String) = this.extraInfo = info
 

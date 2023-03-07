@@ -17,5 +17,13 @@ instatiating Calendar
             and set as a value of the Option
 
 
-WIP: Setting time for event so that it works with Day and Week objects, that query the buffer of all events
-    => 
+Writing and Reading from CSV:
+=> Only events need to be written and read
+    => Events record:
+        - name: string
+        - startingTime: as LocalDateTime, can be parsed into 5 integers 
+        - endingTime: same as above
+        - tags: can be parsed into names in string format
+        - extrainfo: string
+        - bannerColor: as Color, can be parsed into 3 integers
+    Writing CSV file

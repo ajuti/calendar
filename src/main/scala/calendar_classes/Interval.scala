@@ -30,6 +30,6 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
     def intersects(interval: Interval): Boolean = 
         this.contains(interval) || interval.contains(this) || this.overlaps(interval) || interval.overlaps(this)
     
-    override def toString(): String = this.start.toString() +  " - " + this.end.toString()
+    override def toString(): String = this.start.toString() +  ";" + this.end.toString()
 
 end Interval

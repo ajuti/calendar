@@ -3,6 +3,8 @@ import org.scalatest.flatspec.AnyFlatSpec
 import calendar_classes._
 import calendar_classes.service._
 import java.time.*
+import java.awt.Color
+import scala.collection.mutable.Buffer
 
 class EventTest extends AnyFlatSpec, Matchers:
   val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
@@ -15,6 +17,8 @@ class EventTest extends AnyFlatSpec, Matchers:
     println(subject.getColor)
     subject.setColor("#ab34de")
     println(subject.getColor)
+    val b = Color.GRAY
+    println(b.getRed() + " " + b.getGreen() + " " + b.getBlue())
   }
   "removeColor" should "remove a color from bannerColor" in {
     subject.removeColor()
@@ -131,3 +135,24 @@ class IntervalTest extends AnyFlatSpec, Matchers:
 
 
 end IntervalTest
+
+class ParserTest extends AnyFlatSpec, Matchers:
+  "toStringForm" should "return string in a wanted format" in {
+    val parser = Parser()
+    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK))
+)
+    println(parser.toStringForm(events))
+  }
+  "toEventFromString" should "create a new event with given string" in {
+    val oneLine = "nimi,2023-03-08T12:00:00;2023-03-08T15:00:00,test,sup,125-100-80"
+    val parser = Parser()
+
+    println(parser.toEventFromString(oneLine).getColor)
+  }
+  
+class ReaderTest extends AnyFlatSpec, Matchers:
+  "filereader" should "correctly read csv-file and construct events" in {
+    val fileIn = FileReader("events.csv")
+    fileIn.addAllEvents()
+    println(fileIn.events)
+  }
