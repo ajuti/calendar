@@ -1,12 +1,15 @@
 package calendar_classes
-import calendar_classes.Calendar
+import calendar_classes._
+import calendar_classes.service._
 import java.time.LocalDateTime
 import scala.collection.mutable.Buffer
 
-class Day(calendar: Calendar, private val date: LocalDateTime):
-  private val events = calendar.getAllEvents.filter(x => x.getDay == date.getDayOfYear && x.getStart.getYear() == date.getYear())
+class Day(calendar: Calendar, private val interval: Interval):
+  private val events = EventFilter.getDayEvents(calendar, getLdt)
 
-  def getLdt: LocalDateTime = this.date
+  def getInterval = this.interval
+
+  def getLdt: LocalDateTime = interval.start
 
   def getEvents: Buffer[Event] = this.events
 
@@ -14,5 +17,5 @@ class Day(calendar: Calendar, private val date: LocalDateTime):
 
   def deleteEvent(event: Event) = events.remove(events.indexOf(event))
 
-  override def toString = s"${date.getDayOfMonth} of ${date.getMonth}"
+  override def toString = s"${interval.start.getDayOfMonth} of ${interval.start.getMonth}"
 end Day

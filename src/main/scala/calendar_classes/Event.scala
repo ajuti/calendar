@@ -7,7 +7,7 @@ import scala.collection.mutable.Map
 import java.time.*
 import java.awt.Color
 
-class Event(private val name: String, private val startingTime: LocalDateTime, private val endingTime: LocalDateTime, stringTags: String = "", private var extraInfo: String = ""):
+class Event(private val name: String, private var interval: Interval, stringTags: String = "", private var extraInfo: String = ""):
 
   // Keeps track of which color the event should be displayed with
   // ColorTag object can store Colorhexcode values, or RGB
@@ -17,18 +17,14 @@ class Event(private val name: String, private val startingTime: LocalDateTime, p
   private val tags: Map[String, Tag] = Map[String, Tag]()
   if stringTags.nonEmpty then stringTags.split(", ").foreach(addTag(_))
 
-  def getStart: LocalDateTime = this.startingTime
+  def setTime(newStartAndEnd: (LocalDateTime, LocalDateTime)) = ???
+
+  def getInterval = this.interval
 
   def getName: String = this.name
 
-  // Calculates the week number using GetWeek service object
-  def getWeek: Int = GetWeek.getWeek2(startingTime)
-
-  // Returns ordinal day of the year of the event
-  def getDay: Int = startingTime.getDayOfYear
-
   // String representation of the timeperiod of the event
-  def getTime: String = startingTime.toString + " - " + endingTime.toString
+  def getTime: String = interval.toString()
 
   def getColor: Option[Color] = this.bannerColor
 

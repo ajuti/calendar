@@ -1,7 +1,7 @@
 package calendar_classes
 
-import calendar_classes.service.{GetWeek, DateAndWeekGen}
-import calendar_classes.{Week, Day}
+import calendar_classes.service._
+import calendar_classes._
 
 import java.time.LocalDateTime
 import scala.collection.mutable.Buffer
@@ -10,48 +10,45 @@ class Calendar:
   private val events = Buffer[Event]() // stores all events of calendar
   
   // mutable variable for tracking day | Day object knows which events are scheduled for itself
-  private var currentDay = Day(this, LocalDateTime.now())
+  private var currentDay = Day(this, DateAndWeekGen().genDayInterval(LocalDateTime.now()))
   
   // mutable variable for tracking week | Week object also knows off of the events scheduled for that week
-  private var currentWeek = Week(this, getWeekIndex, currentDay.getLdt.getYear)
+  private var currentWeek = Week(this, DateAndWeekGen().genWeekInterval(currentDay.getLdt))
   
   // Returns the index of the week (1 to 52 or 53 depending on leap years)
   // Utilizes GetWeek -serviceobject, which calculates week number, given the LocalDateTime
   def getWeekIndex = GetWeek.getWeek2(currentDay.getLdt)
 
-  def getCurrentDay: LocalDateTime = currentDay.getLdt
+  def getCurrentDay = this.currentDay
+
+  def getCurrentDate: LocalDateTime = currentDay.getLdt
 
   def getCurrentWeek: Week = this.currentWeek
 
   def getAllEvents: Buffer[Event] = this.events
 
   // Sets new Day and Week objects to the mutable variables keeping track of said values
-  // Can be called with both Day and Week or just Week
   def setDayAndWeek(day: Day, week: Week) = 
     this.currentDay = day
     this.currentWeek = week
   end setDayAndWeek
 
-  def setDayAndWeek(day: Day) = 
-    this.currentDay = day
-    this.currentWeek = DateAndWeekGen.newWeek(this, day)
-
   // Adds new event to list of all events as well as the current Day and Week if event is scheduled for current Day/Week
   def addEvent(event: Event): Unit = 
     events.addOne(event)
-    if event.getWeek == this.currentWeek.getWeekNum && event.getStart.getYear() == this.currentDay.getLdt.getYear() then
-      this.currentWeek.addEvent(event)
-    if event.getStart.toLocalDate() == this.currentDay.getLdt.toLocalDate() then
-      this.currentDay.addEvent(event)
+    if event.getInterval.intersects(currentDay.getInterval) then
+      currentDay.addEvent(event)
+    if event.getInterval.intersects(currentWeek.getInterval) then
+      currentWeek.addEvent(event)
   end addEvent
 
   // Deletes events from calendar and current Day/Week
   def deleteEvent(event: Event) = 
     events.remove(events.indexOf(event))
-    if event.getWeek == this.currentWeek.getWeekNum && event.getStart.getYear() == this.currentDay.getLdt.getYear() then
-      this.currentWeek.deleteEvent(event)
-    if event.getStart.toLocalDate() == this.currentDay.getLdt.toLocalDate() then
-      this.currentDay.deleteEvent(event)
+    if event.getInterval.intersects(currentDay.getInterval) then
+      currentDay.deleteEvent(event)
+    if event.getInterval.intersects(currentWeek.getInterval) then
+      currentWeek.deleteEvent(event)
   end deleteEvent
 
   // Filtering methods for string input and tag input
@@ -68,25 +65,31 @@ class Calendar:
     events.filter(x => x.getTags.contains(tag.tagName))
   end searchByTags
 
-  // Updates the internal state of calendar using setDayAndWeek
+  // Updates the internal state of calendar
   def showNextWeek() =
-    val newDayAndWeek = DateAndWeekGen.newDate(this, 7)
-    setDayAndWeek(newDayAndWeek._1, newDayAndWeek._2)
+    val gen = new DateAndWeekGen()
+    currentWeek = gen.newWeek(this, currentWeek.getInterval, 7)
+    currentDay =  gen.newDay(this, 7)
   end showNextWeek
 
   def showPreviousWeek() = 
-    val newDayAndWeek = DateAndWeekGen.newDate(this, -7)
-    setDayAndWeek(newDayAndWeek._1, newDayAndWeek._2)
+    val gen = new DateAndWeekGen()
+    currentWeek = gen.newWeek(this, currentWeek.getInterval, -7)
+    currentDay =  gen.newDay(this, 7)
   end showPreviousWeek
 
   def showNextDay() = 
-    val newDayAndWeek = DateAndWeekGen.newDate(this, 1)
-    setDayAndWeek(newDayAndWeek._1, newDayAndWeek._2)
+    val gen = new DateAndWeekGen()
+    currentDay = gen.newDay(this, 1)
+    if !currentWeek.getInterval.contains(currentDay.getLdt) then
+      currentWeek = gen.newWeek(this, currentWeek.getInterval, 7)
   end showNextDay
 
   def showPreviousDay() = 
-    val newDayAndWeek = DateAndWeekGen.newDate(this, -1)
-    setDayAndWeek(newDayAndWeek._1, newDayAndWeek._2)
+    val gen = new DateAndWeekGen()
+    currentDay = gen.newDay(this, -1)
+    if !currentWeek.getInterval.contains(currentDay.getLdt) then
+      currentWeek = gen.newWeek(this, currentWeek.getInterval, -7)
   end showPreviousDay
 
 end Calendar

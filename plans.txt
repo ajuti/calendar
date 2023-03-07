@@ -15,3 +15,7 @@ instatiating Calendar
     => Color is stored into Option[Color]
         => color can be set with either hexcode or rgb input, and a java.awt.Color -object will be created
             and set as a value of the Option
+
+
+WIP: Setting time for event so that it works with Day and Week objects, that query the buffer of all events
+    => 

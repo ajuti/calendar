@@ -7,7 +7,7 @@ import java.time.*
 class EventTest extends AnyFlatSpec, Matchers:
   val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
   val endingTime = LocalDateTime.of(2023, 1, 1, 16, 30)
-  val subject = Event("work", startingTime, endingTime)
+  val subject = Event("work", Interval(startingTime, endingTime))
 
   "setColor" should "assign a ColorTag to an event" in {
     subject.setColor(10,10,10)
@@ -42,102 +42,21 @@ class EventTest extends AnyFlatSpec, Matchers:
   "getTime" should "return given event's timeframe" in {
     println(subject.getTime)
   }
-  "getWeek" should "return correct week in integer" in {
-    println(subject.getWeek)
-  }
 end EventTest
 
 
 class CalendarTest extends AnyFlatSpec, Matchers:
-  val subject = Calendar()
-  val startingTime = LocalDateTime.of(2023, 3, 5, 10, 0)
-  val endingTime = LocalDateTime.of(2023, 3, 5, 16, 30)
-  val start2 = LocalDateTime.of(2023, 12, 31, 10, 0)
-  val end2 = LocalDateTime.of(2023, 12, 31, 12, 15)
+  "correct events" should "show up in corresponding weeks" in {
+    val calendar = new Calendar
+    val e1 = Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)))
 
-  "addEvent and deleteEvent" should "create and add an Event to the calendar, and remove the Event from list of all events" in {
-    val myEvent = Event("chess", startingTime, endingTime,  "moro, shakki, aarni")
-    subject.addEvent(myEvent)
-    assert(subject.getAllEvents.size === 1)
-    println(subject.getAllEvents.head)
+    calendar.addEvent(e1)
+    println(calendar.getCurrentDate)
+    println(e1.getInterval.start)
     
-    subject.deleteEvent(myEvent)
-    assert(subject.getAllEvents.isEmpty)
+    assert(e1.getInterval.intersects(calendar.getCurrentWeek.getInterval))
 
-  }
-  val e1 = Event("yksi", startingTime, endingTime, "moro")
-  val e2 = Event("kaksi", startingTime, endingTime, "moro")
-  val e3 = Event("kolme", startingTime, endingTime, "yksi")
-  val e4 = Event("neljä", startingTime, endingTime)
-
-  "searchEvents" should "return correct list of events" in {
-    subject.addEvent(e1)
-    subject.addEvent(e2)
-    subject.addEvent(e3)
-    subject.addEvent(e4)
-
-    println(subject.searchEvents("yksi"))
-    println(subject.searchEvents("gaming"))
-    println(subject.searchEvents("moro"))
-    subject.deleteEvent(e1)
-    println(subject.searchEvents("yksi"))
-  }
-  "Week" should "contain correct events" in {
-    val cal2 = Calendar()
-    cal2.addEvent(Event("koulu", startingTime, endingTime))
-    cal2.addEvent(Event("työt", start2, end2))
-
-    println(cal2.getCurrentWeek)
-    println(cal2.getCurrentDay)
-    println(cal2.getCurrentDay.getYear())
-
-    println(cal2.getCurrentWeek.getEvents)
-    for c <- 1 to 52 do
-      cal2.showNextWeek()
-
-    println(cal2.getCurrentWeek.getEvents)
-  }
-  "week" should "be correctly moved forward" in {
-    val cal2 = Calendar()
-    println(cal2.getCurrentWeek)
-    println(cal2.getCurrentDay)
-    println(cal2.getCurrentDay.getYear())
-    cal2.showNextWeek()
-    println(cal2.getCurrentWeek)
-    println(cal2.getCurrentDay)
-    println(cal2.getCurrentDay.getYear())
-
-  }
-  "week and day" should "be correctly moved backward" in {
-    val cal = Calendar()
-    println("Initial week and day: " + cal.getCurrentWeek.toString + " " + cal.getCurrentDay.toString())
-    cal.showPreviousWeek()
-    println("Previous week and day: " + cal.getCurrentWeek.toString + " " + cal.getCurrentDay.toString() + "\n")
-    // Edge case where previous week is in the last year
-  }
-  "Calendar" should "display correct events in current week" in{
-    // First we initiate a calendar object
-    val calendar = Calendar()
-    // calendar should be initialized with currently ongoing week
-    println(calendar.getCurrentWeek)
-    // and event added to current week should show in all of calendars events
-    // as well as in the week's events
-    calendar.addEvent(Event("koulu", LocalDateTime.of(2023, 3, 4, 12, 0), LocalDateTime.of(2023, 3, 4, 13, 0), "fysiikka", "kandikeskus, luokka Y308"))
-    calendar.addEvent(Event("duuni", LocalDateTime.of(2023, 3, 10, 12, 0), LocalDateTime.of(2023, 3, 11, 16, 0), "jutiland"))
-    println(calendar.getAllEvents) 
-    println(calendar.getCurrentWeek.getEvents)
-    // calendar should change the week forward and show the next week's event in current events as well as all events
-    calendar.showNextWeek()
-    println(calendar.getCurrentWeek)
-    println(calendar.getAllEvents) 
-    println(calendar.getCurrentWeek.getEvents)
-    calendar.showNextWeek()
-    println(calendar.getCurrentWeek)
-    println(calendar.getCurrentWeek.getEvents)
-    // calendar should move backwards and show correct events
-    calendar.showPreviousWeek()
-    println(calendar.getCurrentWeek.getEvents)
-    calendar.showPreviousWeek()
+    println(calendar.getAllEvents)
     println(calendar.getCurrentWeek.getEvents)
   }
 
@@ -170,8 +89,33 @@ class ServiceTest extends AnyFlatSpec, Matchers:
 
 class LDTTest extends AnyFlatSpec, Matchers:
   val ldt1 = LocalDateTime.of(2023, 10, 10, 10, 10)
-  val ldt2 = LocalDateTime.of(2023, 10, 10, 10, 11)
+  val ldt2 = LocalDateTime.of(2023, 10, 15, 10, 10)
+  val testDay1 = LocalDateTime.of(2023, 10, 12, 10, 10)
   "compareTo" should "return boolean between these LDTs" in {
     println(ldt1.equals(ldt2))
   }
 
+class IntervalTest extends AnyFlatSpec, Matchers:
+  val interval = Interval(LocalDateTime.of(2023, 1, 3, 0, 0), LocalDateTime.of(2023, 1, 7, 23, 59))
+  // Whole event is inside the interval | true
+  val event1 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 6, 10, 0))
+  // The event is on the first day of the interval | true
+  val event2 = Interval(LocalDateTime.of(2023, 1, 3, 10, 0), LocalDateTime.of(2023, 1, 3, 12, 0))
+  // The event is on the last day of the interval | true
+  val event3 = Interval(LocalDateTime.of(2023, 1, 7, 10, 0), LocalDateTime.of(2023, 1, 7, 15, 0))
+  // Event is outside of the interval | false
+  val event4 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 2, 10, 0))
+  // Event start is in but end is outside of the interval | true
+  val event5 = Interval(LocalDateTime.of(2023, 1, 5, 10, 0), LocalDateTime.of(2023, 1, 9, 10, 0))
+  // Event start is out but end is outside of the interval | true
+  val event6 = Interval(LocalDateTime.of(2023, 1, 1, 10, 0), LocalDateTime.of(2023, 1, 4, 10, 0))
+
+  println(interval.intersects(event1))
+  println(interval.intersects(event2))
+  println(interval.intersects(event3))
+  println(interval.intersects(event4))
+  println(interval.intersects(event5))
+  println(interval.intersects(event6))
+
+
+end IntervalTest
