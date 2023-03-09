@@ -24,7 +24,7 @@ class FileReader(filePath: String):
             try 
                 while oneLine != null do
                     events.addOne(parser.toEventFromString(oneLine))
-                    it.next()    
+                    oneLine = it.next().mkString(",")    
                 end while
             catch
                 case e: ju.NoSuchElementException => println("Reading finished with exception")
@@ -32,7 +32,9 @@ class FileReader(filePath: String):
             reader.close()
         catch
             case e: FileNotFoundException   => println("Couldn't find file")
-            case e: IOException             => println("IOException when trying to read the ")
+            case e: IOException             => println("IOException when trying to read the file")
+        
+        events
 
     end addAllEvents
 

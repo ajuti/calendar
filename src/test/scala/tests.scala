@@ -5,6 +5,7 @@ import calendar_classes.service._
 import java.time.*
 import java.awt.Color
 import scala.collection.mutable.Buffer
+import java.util.regex.Matcher
 
 class EventTest extends AnyFlatSpec, Matchers:
   val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
@@ -62,6 +63,10 @@ class CalendarTest extends AnyFlatSpec, Matchers:
 
     println(calendar.getAllEvents)
     println(calendar.getCurrentWeek.getEvents)
+  }
+  "calendar" should "instatiate with correct events" in {
+    val calendar = new Calendar
+    println(calendar.getAllEvents)
   }
 
 end CalendarTest
@@ -141,7 +146,7 @@ class ParserTest extends AnyFlatSpec, Matchers:
     val parser = Parser()
     val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK))
 )
-    println(parser.toStringForm(events))
+    println(parser.eventToListOfStrings(events.head))
   }
   "toEventFromString" should "create a new event with given string" in {
     val oneLine = "nimi,2023-03-08T12:00:00;2023-03-08T15:00:00,test,sup,125-100-80"
@@ -155,4 +160,11 @@ class ReaderTest extends AnyFlatSpec, Matchers:
     val fileIn = FileReader("events.csv")
     fileIn.addAllEvents()
     println(fileIn.events)
+  }
+
+class WriterTest extends AnyFlatSpec, Matchers:
+  "filewriter" should "correctly write event-information to csv-file" in {
+    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
+    val fileOut = FileWriter("events.csv", events)
+    fileOut.writeAllEvents()
   }

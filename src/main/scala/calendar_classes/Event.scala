@@ -7,7 +7,7 @@ import scala.collection.mutable.Map
 import java.time.*
 import java.awt.Color
 
-class Event(private val name: String, private var interval: Interval, stringTags: String = "", private var extraInfo: String = "", private var bannerColor: Option[Color] = None):
+class Event(private val name: String, private var interval: Interval, stringTags: String = "!empty!", private var extraInfo: String = "!empty!", private var bannerColor: Option[Color] = None):
 
   // BannerColor keeps track of which color the event should be displayed with
   // ColorTag object can store Colorhexcode values, or RGB
@@ -42,7 +42,7 @@ class Event(private val name: String, private var interval: Interval, stringTags
 
   def getColorString: String =
     this.bannerColor match
-      case None => ""
+      case None => "!empty!"
       case Some(color) => s"${color.getRed()}-${color.getGreen()}-${color.getBlue()}"
   end getColorString
 

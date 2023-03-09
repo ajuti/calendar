@@ -7,12 +7,9 @@ import java.awt.Color
 
 class Parser():
 
-    def toStringForm(events: Buffer[Event]): String = 
-        var parsedString = ""
-        for c <- events do
-            parsedString = parsedString + s"${c.getName},${c.getTime},${c.getTags},${c.getInfo},${c.getColorString}\n"
-        parsedString
-    end toStringForm
+    def eventToListOfStrings(event: Event): List[String] = 
+        List[String](event.getName, event.getTime, event.getTags, event.getInfo, event.getColorString)
+    end eventToListOfStrings
 
     def toEventFromString(line: String): Event =
         // name, time, stringTags, extra, color
@@ -22,9 +19,11 @@ class Parser():
         val end = LocalDateTime.parse(elements(1).dropWhile(_ != ';').tail)
         val stringTags = elements(2)
         val extra = elements(3)
-        val colorElems = elements(4).split('-').map(_.toInt)
+        val colorElems = elements(4)
         val color: Option[Color] = 
-            if colorElems.nonEmpty then Some(Color(colorElems(0), colorElems(1), colorElems(2)))
+            if colorElems != "!empty!" then 
+                val rgb = colorElems.split("-")
+                Some(Color(rgb(0).toInt, rgb(1).toInt, rgb(2).toInt))
             else None
 
         Event(name, Interval(start, `end`), stringTags, extra, color)

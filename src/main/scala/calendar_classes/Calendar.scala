@@ -8,7 +8,7 @@ import scala.collection.mutable.Buffer
 import scala.compiletime.ops.int
 
 class Calendar:
-  private val events = Buffer[Event]() // GenAllEventsFromFile.get // stores all events of calendar
+  private val events = new FileReader("events.csv").addAllEvents() // GenAllEventsFromFile.get // stores all events of calendar
   
   // mutable variable for tracking day | Day object knows which events are scheduled for itself
   private var currentDay = Day(this, DateAndWeekGen().genDayInterval(LocalDateTime.now()))
