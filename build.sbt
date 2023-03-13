@@ -10,3 +10,4 @@ libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.15"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 
 libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.3.10"
+libraryDependencies += "org.scalafx" %% "scalafx" % "18.0.1-R28"

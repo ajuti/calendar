@@ -19,9 +19,9 @@ class FileReader(filePath: String):
             val parser = Parser()
 
             val it = reader.iterator
-
-            var oneLine = it.next().mkString(",")
-            try 
+            
+            try          
+                var oneLine = it.next().mkString(",")
                 while oneLine != null do
                     events.addOne(parser.toEventFromString(oneLine))
                     oneLine = it.next().mkString(",")    

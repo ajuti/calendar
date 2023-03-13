@@ -1,0 +1,2 @@
+TabPane for swapping between week/day views
+ScrollPane to add scrollable panel for each view

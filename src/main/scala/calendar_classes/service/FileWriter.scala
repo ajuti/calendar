@@ -29,3 +29,4 @@ class FileWriter(filePath: String, events: Buffer[Event]):
             case e: IOException => println("IOException when trying to write to the file")
         
     end writeAllEvents
+end FileWriter

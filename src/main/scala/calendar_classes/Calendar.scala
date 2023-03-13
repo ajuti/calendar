@@ -94,4 +94,8 @@ class Calendar:
       currentWeek = gen.newWeek(this, currentWeek.getInterval, -7)
   end showPreviousDay
 
+  def upload() = 
+    val fileOut = FileWriter("events.csv", this.events)
+    fileOut.writeAllEvents()
+
 end Calendar

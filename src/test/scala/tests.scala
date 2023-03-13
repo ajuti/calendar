@@ -6,6 +6,7 @@ import java.time.*
 import java.awt.Color
 import scala.collection.mutable.Buffer
 import java.util.regex.Matcher
+import com.github.tototoshi.csv._
 
 class EventTest extends AnyFlatSpec, Matchers:
   val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
@@ -164,7 +165,8 @@ class ReaderTest extends AnyFlatSpec, Matchers:
 
 class WriterTest extends AnyFlatSpec, Matchers:
   "filewriter" should "correctly write event-information to csv-file" in {
-    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
-    val fileOut = FileWriter("events.csv", events)
-    fileOut.writeAllEvents()
+    // val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
+    // val fileOut = FileWriter("events.csv", events)
+    val calendar = Calendar()
+    calendar.upload()
   }
