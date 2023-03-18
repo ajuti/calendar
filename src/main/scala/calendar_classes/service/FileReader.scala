@@ -10,8 +10,9 @@ import java.io.IOException
 
 class FileReader(filePath: String):
 
+
     val events = Buffer[Event]()
-    
+
     def addAllEvents() = 
         try 
             val reader = CSVReader.`open`(new File(filePath))
