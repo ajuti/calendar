@@ -28,3 +28,12 @@ Workload is hard to approximate, but my best guess for everything so far is arou
 All in all, I'm ahead of my initial schedule.
 
 #### END Log entry 6.3.2023 ####
+
+#### START Log Entry 20.3.2023 ####
+
+Backend for the essential features is done and tested without GUI implementation.
+Started on playing around with GUI elements and constructing the rough look of the final interface.
+
+Workload approximated at around 10 hours for the gui including research for it. Should be well ahead of schedule still.
+
+#### END Log Entry 20.3.2023 ####
