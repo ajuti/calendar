@@ -13,6 +13,7 @@ import scalafx.scene.control.TabPane._
 
 val weeklyTab = new Tab {
     text = "Weekly"
+    content = scrollPaneWeekly
 }
 val dailyTab = new Tab {
     text = "Daily"
@@ -21,7 +22,5 @@ val dailyTab = new Tab {
 val botPane = new TabPane {
     tabs = List(weeklyTab, dailyTab)
     tabClosingPolicy_=(TabClosingPolicy.Unavailable)
-    maxHeight_=(500)
-    prefWidth_=(rootWidth * 0.75 - 5)
-    background = Background.fill(Color.BlanchedAlmond)
+    prefHeight_=(655)
 }
