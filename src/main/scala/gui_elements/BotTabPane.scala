@@ -11,9 +11,13 @@ import scalafx.scene.layout._
 import scalafx.scene.paint._
 import scalafx.scene.control.TabPane._
 
+val bannerPlusViewWeekly = new VBox {
+    children = List(bannerBoxWeek, scrollPaneWeekly)
+}
+
 val weeklyTab = new Tab {
     text = "Weekly"
-    content = scrollPaneWeekly
+    content = bannerPlusViewWeekly
 }
 val dailyTab = new Tab {
     text = "Daily"
@@ -22,5 +26,5 @@ val dailyTab = new Tab {
 val botPane = new TabPane {
     tabs = List(weeklyTab, dailyTab)
     tabClosingPolicy_=(TabClosingPolicy.Unavailable)
-    prefHeight_=(655)
+    prefHeight_=(800)
 }

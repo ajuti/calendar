@@ -11,6 +11,8 @@ import scalafx.scene.layout._
 import scalafx.scene.paint._
 import gui_elements.MainGUI.calendar1
 import scala.collection.mutable.Buffer
+import scalafx.event._
+import scalafx.scene.input.MouseEvent
 
 val allDayLabels = Buffer[Label]()
 
@@ -46,24 +48,28 @@ val oneDay = new VBox {
 }
 
 val oneWeek = new Pane {
-    prefHeight = 625
+    prefHeight = 900
     prefWidth = rootWidth * 0.75
-    children_=(List(bannerBoxWeek))
-    for c <- 1 to 6 do
-        children += new Separator {
-            prefHeight = rootHeigth * 0.75
-            layoutX = c * 137
-            orientation_=(Orientation.Vertical)
+    for c <- 0 to 23 do
+        children += new Label {
+            if c < 10 then
+                text = s"0$c:00"
+            else
+                text = s"$c:00"
+            opacity = 0.5
+            font = new Font(20)
+            layoutY = c * 35
         }
+    
     background_=(Background.fill(Color.LightCyan))
 
-    onMouseClicked = () =>
-        
+    onMouseClicked = (e:MouseEvent) => println(e.sceneX + " " + e.sceneY)
 }
 
 val scrollPaneDaily = new ScrollPane {
     content = oneDay
 }
 val scrollPaneWeekly = new ScrollPane {
+    maxHeight = 580
     content = oneWeek
 }
