@@ -13,31 +13,45 @@ import gui_elements.MainGUI.calendar1
 import scala.collection.mutable.Buffer
 import scalafx.event._
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.shape.Rectangle
+import javafx.scene.input.MouseDragEvent
+
+import scala.math._
 
 val allDayLabels = Buffer[Label]()
+
+val allHolidayLabels = Buffer[Label]()
 
 var singleDayLabel = new Label
 
 val sep1 = new Separator {
-    prefWidth_=(rootWidth * 0.75)
+    prefWidth_=(rootWidth * 0.75 - 47)
     layoutY = 25
+    layoutX = 47
 }
 
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
         val date = calendar1.getCurrentWeek.getInterval.start.plusDays(c)
         children += new Pane {
-                layoutX = c * 137
-                children += new Label(s"${date.getDayOfWeek().toString.substring(0, 3)} ${date.getDayOfMonth()}.${date.getMonth().getValue()}") {
+                layoutX = 45 + c * 130
+                allDayLabels += new Label(s"${date.getDayOfWeek().toString.substring(0, 3)} ${date.getDayOfMonth()}.${date.getMonth().getValue()}") {
                             font_=(new Font(20))
+                            prefWidth_=(130)
                             alignment_=(Pos.Center)
                         }
+                children += allDayLabels(c)
                 prefHeight_=(25)
                 prefWidth_=(137)
                 }
+        children += new Separator {
+            orientation_=(Orientation.Vertical)
+            prefHeight_=(50)
+            layoutX = 46 + c * 130
+        }
     prefHeight_=(50)
     children += sep1
-    background = Background.fill(Color.LightGreen)
+    // background = Background.fill(Color.LightGreen)
 }
 
 val oneDay = new VBox {
@@ -48,7 +62,7 @@ val oneDay = new VBox {
 }
 
 val oneWeek = new Pane {
-    prefHeight = 900
+    prefHeight = 870
     prefWidth = rootWidth * 0.75
     for c <- 0 to 23 do
         children += new Label {
@@ -57,19 +71,41 @@ val oneWeek = new Pane {
             else
                 text = s"$c:00"
             opacity = 0.5
-            font = new Font(20)
-            layoutY = c * 35
+            font = new Font(15)
+            layoutY = 20 + c * 35
+        }
+        children += new Separator {
+            prefWidth_=(rootWidth * 0.75 - 45)
+            layoutY = 30 + c * 35
+            layoutX = 38
+            opacity_=(0.3)
+        }
+    for c <- 0 to 6 do
+        children += new Separator {
+            orientation_=(Orientation.Vertical)
+            prefHeight_=(870)
+            layoutX = 45 + c * 130
         }
     
-    background_=(Background.fill(Color.LightCyan))
+    background_=(Background.fill(Color.White))
 
-    onMouseClicked = (e:MouseEvent) => println(e.sceneX + " " + e.sceneY)
+    //onMouseClicked = (e:MouseEvent) => println(e.x + " " + e.y)
+    onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)
+    //onMouseDragOver = (e:MouseDragEvent) => println(e.x + " " + e.y)
+        /*children += new Rectangle {
+            prefHeight_=(abs(e.y - e.sceneY))
+            prefWidth_=(abs(e.x - e.sceneX))
+            fill_=(Color.Black)
+            layoutX_=(e.sceneX)
+            layoutY_=(e.sceneY)
+        }*/
 }
 
 val scrollPaneDaily = new ScrollPane {
+    maxHeight_=(560)
     content = oneDay
 }
 val scrollPaneWeekly = new ScrollPane {
-    maxHeight = 580
+    maxHeight = 560
     content = oneWeek
 }

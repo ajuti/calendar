@@ -26,5 +26,5 @@ val dailyTab = new Tab {
 val botPane = new TabPane {
     tabs = List(weeklyTab, dailyTab)
     tabClosingPolicy_=(TabClosingPolicy.Unavailable)
-    prefHeight_=(800)
+    prefHeight_=(850)
 }

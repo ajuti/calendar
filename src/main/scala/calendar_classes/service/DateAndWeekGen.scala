@@ -19,7 +19,7 @@ class DateAndWeekGen:
         date.getDayOfWeek() match
             case DayOfWeek.MONDAY   => Interval(date.withHour(0).withMinute(0), date.plusDays(6).withHour(23).withMinute(59))
             case DayOfWeek.TUESDAY  => Interval(date.minusDays(1).withHour(0).withMinute(0), date.plusDays(5).withHour(23).withMinute(59))
-            case DayOfWeek.WEDNESDAY => Interval(date.minusDays(2).withHour(0).withMinute(0), date.plusDays(4).withHour(23).withHour(59))
+            case DayOfWeek.WEDNESDAY => Interval(date.minusDays(2).withHour(0).withMinute(0), date.plusDays(4).withHour(23).withMinute(59))
             case DayOfWeek.THURSDAY => Interval(date.minusDays(3).withHour(0).withMinute(0), date.plusDays(3).withHour(23).withMinute(59))
             case DayOfWeek.FRIDAY   => Interval(date.minusDays(4).withHour(0).withMinute(0), date.plusDays(2).withHour(23).withMinute(59))
             case DayOfWeek.SATURDAY => Interval(date.minusDays(5).withHour(0).withMinute(0), date.plusDays(1).withHour(23).withMinute(59))
