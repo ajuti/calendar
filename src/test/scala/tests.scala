@@ -145,8 +145,7 @@ end IntervalTest
 class ParserTest extends AnyFlatSpec, Matchers:
   "toStringForm" should "return string in a wanted format" in {
     val parser = Parser()
-    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK))
-)
+    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
     println(parser.eventToListOfStrings(events.head))
   }
   "toEventFromString" should "create a new event with given string" in {
@@ -168,5 +167,7 @@ class WriterTest extends AnyFlatSpec, Matchers:
     // val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
     // val fileOut = FileWriter("events.csv", events)
     val calendar = Calendar()
+    val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
+    events.foreach(calendar.addEvent(_))
     calendar.upload()
   }

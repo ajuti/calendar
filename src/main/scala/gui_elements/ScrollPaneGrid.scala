@@ -17,6 +17,7 @@ import scalafx.scene.shape.Rectangle
 import javafx.scene.input.MouseDragEvent
 
 import scala.math._
+import gui_elements.MainGUI.weekEventPanes
 
 val allDayLabels = Buffer[Label]()
 
@@ -60,6 +61,10 @@ val oneDay = new VBox {
     // children +=
     background_=(Background.fill(Color.AliceBlue))
 }
+val weekEvents = new Pane {
+    for c <- weekEventPanes do
+        children += c
+}
 
 val oneWeek = new Pane {
     prefHeight = 870
@@ -86,11 +91,14 @@ val oneWeek = new Pane {
             prefHeight_=(870)
             layoutX = 45 + c * 130
         }
-    
+    /*for c <- allEventPanes do
+        children += c
+    */
+    children += weekEvents
     background_=(Background.fill(Color.White))
 
-    //onMouseClicked = (e:MouseEvent) => println(e.x + " " + e.y)
-    onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)
+    onMouseClicked = (e:MouseEvent) => println(e.x + " " + e.y)
+    //onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)
     //onMouseDragOver = (e:MouseDragEvent) => println(e.x + " " + e.y)
         /*children += new Rectangle {
             prefHeight_=(abs(e.y - e.sceneY))

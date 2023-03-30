@@ -16,13 +16,17 @@ import scalafx.scene.text._
 import scalafx.scene.image._
 import scalafx.scene.control.TabPane._
 import calendar_classes.Calendar
+import scala.collection.mutable.Buffer
 
 
 
 
 object MainGUI extends JFXApp3:
     val calendar1 = new Calendar
+    val weekEventPanes = Buffer[Pane]()
     def start(): Unit = 
+        
+        weekEventPanes.appendAll(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
         stage = new JFXApp3.PrimaryStage {
             title = "Calendar"
             val rootWidth = 1280
