@@ -39,8 +39,8 @@ object MainGUI extends JFXApp3:
 
                     val showPop = new Button("Show Popup") {
                         onAction = () =>
-                            //if addEventPopup.isShowing() then
-                            addEventPopup.show()
+                            val newPopup = WindowGenerator.genNewPopup
+                            newPopup.show()
                     }
 
                     background = Background.fill(Color.Crimson)
