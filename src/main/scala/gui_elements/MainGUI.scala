@@ -17,6 +17,7 @@ import scalafx.scene.image._
 import scalafx.scene.control.TabPane._
 import calendar_classes.Calendar
 import scala.collection.mutable.Buffer
+import scalafx.event.ActionEvent
 
 
 
@@ -36,10 +37,15 @@ object MainGUI extends JFXApp3:
                     prefWidth_=(rootWidth*0.25)
                     prefHeight_=(rootHeigth)
 
+                    val showPop = new Button("Show Popup") {
+                        onAction = () =>
+                            //if addEventPopup.isShowing() then
+                            addEventPopup.show()
+                    }
 
                     background = Background.fill(Color.Crimson)
                     //border_=(Border.stroke(Color.DarkOrange))
-                    //children = List(new Button)         
+                    children = List(showPop)         
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75)
