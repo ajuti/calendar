@@ -67,12 +67,17 @@ object WindowGenerator:
                 val startTimeDatePicker: DatePicker = new DatePicker {
                     layoutX = 100
                     layoutY = 47
-                    prefWidth = 140
+                    prefWidth = 140     
                     value_=(calendar1.getCurrentDate.toLocalDate())
                     this.valueProperty().onChange(
-                        if this.getValue().isEqual(endTimeDatePicker.getValue()) then
+                        if this.getValue().isEqual(endTimeDatePicker.getValue()) && startTimeCBoxHours.getValue() != "23" then
                             endTimeCBoxHours.items_=(
                                 new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue())
+                            )
+                        else if this.getValue().isEqual(endTimeDatePicker.getValue()) then
+                            endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
+                            endTimeCBoxHours.items_=(
+                                new ObservableBuffer ++= genHours
                             )
                         else if this.getValue().isBefore(endTimeDatePicker.getValue()) then
                             endTimeCBoxHours.items_=(
@@ -88,7 +93,7 @@ object WindowGenerator:
                     prefWidth = 140
                     value_=(
                         if calendar1.getCurrentDate.getHour() != 23 then
-                            calendar1.getCurrentDate.toLocalDate()
+                            calendar1.getCurrentDate.toLocalDate() 
                         else
                             calendar1.getCurrentDate.toLocalDate().plusDays(1)
                         )
@@ -119,8 +124,9 @@ object WindowGenerator:
                         if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) && this.getValue() != "23"  then
                             endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > this.getValue()))
                         else if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then
-                            endTimeDatePicker.value_=(LocalDateTime.now().toLocalDate.plusDays(1))
+                            endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
                             endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
+                            endTimeCBoxHours.value_=("00")
                         else
                             {}
                         )
@@ -142,7 +148,7 @@ object WindowGenerator:
                         if LocalDateTime.now().getHour() != 23 then
                             new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue())
                         else
-                            new ObservableBuffer += "00"
+                            new ObservableBuffer ++= genHours
                         )
                     value_=(this.items.get.head)
                     layoutX = 100
@@ -170,7 +176,6 @@ object WindowGenerator:
                     layoutX = 100
                     layoutY = 247
                 }
-
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {
                     layoutX = 10
@@ -210,7 +215,6 @@ object WindowGenerator:
                                     endTimeDatePicker
                                     )
                 }
-            
                 root = popupRootPane
             }
             resizable_=(false)

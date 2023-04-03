@@ -116,4 +116,5 @@ val scrollPaneDaily = new ScrollPane {
 val scrollPaneWeekly = new ScrollPane {
     maxHeight = 560
     content = oneWeek
+    vvalue_=(0.6)
 }

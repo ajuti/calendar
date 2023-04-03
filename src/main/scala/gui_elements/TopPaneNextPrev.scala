@@ -41,6 +41,7 @@ val nextButton = new Button {
 
     onAction = () =>
         calendar1.showNextWeek()
+        println(calendar1.getCurrentWeek.getEvents)
         weekEventPanes.clear()
         weekEventPanes.appendAll(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
         weekEvents.children_=(weekEventPanes)
