@@ -37,3 +37,16 @@ Started on playing around with GUI elements and constructing the rough look of t
 Workload approximated at around 10 hours for the gui including research for it. Should be well ahead of schedule still.
 
 #### END Log Entry 20.3.2023 ####
+
+#### START Log Entry 4.3.2023 ####
+
+General structure and idea for the final look of the gui is done and partly implemented. For now completed features are weekly layout that can traverse
+between different weeks and days. Also events recorded in the csv file are shown in the weekly view in the (nearly) correct position.
+Events themselves don't have any interactions yet. 
+A popup window for adding event under work currently and nearly finished.
+
+Workload impossible to guestimate but if I had to guess, it would be around 40 hours in total (lot of it spent on debugging and whatnot)
+
+Should still be well in schedule for the 26th
+
+#### END Log Entry 4.3.2023 ####

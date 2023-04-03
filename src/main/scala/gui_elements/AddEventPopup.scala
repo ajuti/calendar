@@ -46,7 +46,6 @@ object WindowGenerator:
             "30"
         else
             "45"
-
     end setStartMinsFromNull
 
     def genNewPopup: Stage =
@@ -57,6 +56,14 @@ object WindowGenerator:
             alwaysOnTop_=(true)
             scene = new Scene(300, 500) {
                 val defFont = new Font(12)
+                
+                def shiftDay() = 
+                    endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
+                    endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
+                     endTimeCBoxHours.value_=("00")
+                    endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes)
+                end shiftDay
+
 
                 val nameTxtField = new TextField {
                     promptText = "Event name"
@@ -106,7 +113,7 @@ object WindowGenerator:
                             endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
                     )
                 }   
-                val startTimeCBoxHours = new ComboBox[String] {
+                val startTimeCBoxHours: ComboBox[String] = new ComboBox[String] {
                     for c <- genHours do
                         +=(c)
                     end for
@@ -121,12 +128,14 @@ object WindowGenerator:
                     prefWidth_=(65)
                     promptText_=("Hr")
                     this.valueProperty().onChange(
-                        if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) && this.getValue() != "23"  then
-                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > this.getValue()))
-                        else if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then
-                            endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
-                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
-                            endTimeCBoxHours.value_=("00")
+                        if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then
+                            if this.getValue() != "23" && startTimeCBoxMinutes.getValue() != "45" then
+                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ >= this.getValue()))
+                                endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > startTimeCBoxMinutes.getValue()))
+                            else if this.getValue != "23" && startTimeCBoxMinutes.getValue() == "45" then
+                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > this.getValue()))
+                            else
+                                shiftDay()
                         else
                             {}
                         )
@@ -142,6 +151,16 @@ object WindowGenerator:
                     layoutY = 74
                     prefWidth_=(65)
                     promptText_=("Min")
+                    this.valueProperty().onChange(
+                        if startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then 
+                            if this.getValue() != "45" then
+                                endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > this.getValue()))
+                            else
+                                if startTimeCBoxHours.getValue() == "23" then
+                                shiftDay()
+                            else
+                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
+                    )   
                 }  
                 val endTimeCBoxHours: ComboBox[String] = new ComboBox[String] {
                     items_=(
