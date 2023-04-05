@@ -12,11 +12,19 @@ import scalafx.scene.paint._
 val settings = new MenuItem("Settings")
 val exit = new MenuItem("Exit")
 
+val default = new MenuItem("Default")
+val light = new MenuItem("Light")
+val dark = new MenuItem("Dark")
+val saatana = new MenuItem("saatana")
+
 
 val menu1 = new Menu("Calendar") {
     items_=(List(settings, exit))
 }
+val menu2 = new Menu("Theme") {
+    items_=(List(default, light, dark, saatana))
+}
 
 val menuBar = new MenuBar {
-    menus_=(List(menu1))
+    menus_=(List(menu1, menu2))
 }

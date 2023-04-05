@@ -60,7 +60,7 @@ object WindowGenerator:
                 def shiftDay() = 
                     endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
                     endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
-                     endTimeCBoxHours.value_=("00")
+                    endTimeCBoxHours.value_=("00")
                     endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes)
                 end shiftDay
 
@@ -78,18 +78,20 @@ object WindowGenerator:
                     value_=(calendar1.getCurrentDate.toLocalDate())
                     this.valueProperty().onChange(
                         if this.getValue().isEqual(endTimeDatePicker.getValue()) && startTimeCBoxHours.getValue() != "23" then
-                            endTimeCBoxHours.items_=(
-                                new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue())
-                            )
+                            if startTimeCBoxMinutes.getValue() != "45" then
+                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ >= startTimeCBoxHours.getValue()))
+                            else
+                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
+
                         else if this.getValue().isEqual(endTimeDatePicker.getValue()) then
                             endTimeDatePicker.value_=(endTimeDatePicker.getValue().plusDays(1))
-                            endTimeCBoxHours.items_=(
-                                new ObservableBuffer ++= genHours
-                            )
+                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
+                            endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes)
+
                         else if this.getValue().isBefore(endTimeDatePicker.getValue()) then
-                            endTimeCBoxHours.items_=(
-                                new ObservableBuffer ++= genHours
-                            )
+                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
+                            endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes)
+
                         else
                             endTimeDatePicker.value_=(this.getValue())
                         )
@@ -110,7 +112,8 @@ object WindowGenerator:
                                 new ObservableBuffer ++= genHours
                             )
                         else
-                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
+                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ >= startTimeCBoxHours.getValue()))
+                            endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > startTimeCBoxMinutes.getValue()))
                     )
                 }   
                 val startTimeCBoxHours: ComboBox[String] = new ComboBox[String] {
@@ -134,6 +137,8 @@ object WindowGenerator:
                                 endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > startTimeCBoxMinutes.getValue()))
                             else if this.getValue != "23" && startTimeCBoxMinutes.getValue() == "45" then
                                 endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > this.getValue()))
+                            else if this.getValue == "23" && startTimeCBoxMinutes.getValue() != "45" then
+                                endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > startTimeCBoxMinutes.getValue()))
                             else
                                 shiftDay()
                         else
@@ -157,9 +162,12 @@ object WindowGenerator:
                                 endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes.filter(_ > this.getValue()))
                             else
                                 if startTimeCBoxHours.getValue() == "23" then
-                                shiftDay()
-                            else
-                                endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
+                                    shiftDay()
+                                else
+                                    endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours.filter(_ > startTimeCBoxHours.getValue()))
+                        else
+                            endTimeCBoxHours.items_=(new ObservableBuffer ++= genHours)
+                            endTimeCBoxMinutes.items_=(new ObservableBuffer ++= genMinutes)
                     )   
                 }  
                 val endTimeCBoxHours: ComboBox[String] = new ComboBox[String] {
