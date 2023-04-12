@@ -18,6 +18,8 @@ import scalafx.scene.input.MouseEvent
 import scalafx.collections.ObservableArray
 import scalafx.collections.ObservableBuffer
 import java.time._
+import calendar_classes.Event
+import calendar_classes.Interval
 
 object WindowGenerator:
     def genHours: IndexedSeq[String] =
@@ -50,11 +52,11 @@ object WindowGenerator:
 
     def genNewPopup: Stage =
         val addEventPopup = new Stage {
-            width_=(300)
-            height_=(500)
+            width_=(270)
+            height_=(430)
             title = "Add new event"
             alwaysOnTop_=(true)
-            scene = new Scene(300, 500) {
+            scene = new Scene(270, 430) {
                 val defFont = new Font(12)
                 
                 def shiftDay() = 
@@ -196,12 +198,64 @@ object WindowGenerator:
                     promptText_=("Min")
                 }   
 
-                val extrainfoTxtField = new TextField {
+                val extrainfoTxtField = new TextArea {
                     promptText = "Add info (optional)"
                     font = defFont
                     prefWidth = 140
+                    prefHeight = 50
                     layoutX = 100
-                    layoutY = 247
+                    layoutY = 300
+                }
+                val tagsTxtField = new TextField {
+                    promptText = "Tag name"
+                    font = defFont
+                    prefWidth = 115
+                    prefHeight = 27
+                    layoutX = 100
+                    layoutY = 173
+                }
+                val addTags = new Button {
+                    text = "+"
+                    prefWidth = 20
+                    layoutX = 215
+                    layoutY = 173
+                    onAction = () =>
+                        tagsList.items.get().add(tagsTxtField.text.value)
+                }
+                val tagsList = new ListView(List[String]()) {
+                    prefWidth = 140
+                    prefHeight = 50
+                    layoutX = 100
+                    layoutY = 200
+                    items = new ObservableBuffer()
+                    onMouseClicked = (e: MouseEvent) => 
+                        if e.getClickCount() == 2 then
+                            this.items.get().remove(this.selectionModel.get().getSelectedIndex())
+                }
+                val colPicker = new ColorPicker {
+                    layoutX = 100
+                    layoutY = 257
+                    value = Color.Transparent
+                }
+                val saveEvent = new Button {
+                    text = "Add event"
+                    layoutX = 50
+                    layoutY = 370
+                    onAction = () =>
+                        val freshE = new Event(
+                            nameTxtField.text.value,
+                            Interval(LocalDateTime.parse(startTimeDatePicker.getValue().toString() + "T" + startTimeCBoxHours.getValue() + ":" + startTimeCBoxMinutes.getValue()),
+                                     LocalDateTime.parse(endTimeDatePicker.getValue().toString() + "T" + endTimeCBoxHours.getValue() + ":" + endTimeCBoxMinutes.getValue())),
+                                     tagsList.items.get().mkString("-"),
+                                     extrainfoTxtField.text.get(),
+                                     Some(colPicker.getValue())
+                        )
+                        calendar1.addEvent(freshE)
+                }
+                val cancelEvent = new Button {
+                    text = "Cancel"
+                    layoutX = 150
+                    layoutY = 370
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {
@@ -211,7 +265,7 @@ object WindowGenerator:
                     }
                     children += new Label("Additional info:") { 
                     layoutX = 10
-                    layoutY = 250
+                    layoutY = 305
                     font = defFont
                     }
                     children += new Label("Start time:") {
@@ -224,13 +278,21 @@ object WindowGenerator:
                     layoutY = 112
                     font = defFont
                     }
-                    children += new Label(":"){
+                    children += new Label(":") {
                         layoutX = 168
                         layoutY = 80
                     }
-                    children += new Label(":"){
+                    children += new Label(":") {
                         layoutX = 168
                         layoutY = 142
+                    }
+                    children += new Label("Tags:") {
+                        layoutX = 10
+                        layoutY = 175
+                    }
+                    children += new Label("Color:") {
+                        layoutX = 10
+                        layoutY = 260
                     }
                     children ++= List(nameTxtField, 
                                     startTimeCBoxHours, 
@@ -239,7 +301,13 @@ object WindowGenerator:
                                     extrainfoTxtField,
                                     endTimeCBoxHours,
                                     endTimeCBoxMinutes,
-                                    endTimeDatePicker
+                                    endTimeDatePicker,
+                                    tagsTxtField,
+                                    addTags,
+                                    tagsList,
+                                    colPicker,
+                                    saveEvent,
+                                    cancelEvent
                                     )
                 }
                 root = popupRootPane

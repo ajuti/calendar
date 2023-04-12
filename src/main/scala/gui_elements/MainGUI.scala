@@ -24,15 +24,17 @@ import scalafx.event.ActionEvent
 
 object MainGUI extends JFXApp3:
     val calendar1 = new Calendar
-    val weekEventPanes = Buffer[Pane]()
+    val weekEventPanes = ObservableBuffer[Pane]()
+    weekEventPanes.onChange(println("xdd"))
     def start(): Unit = 
-        
+
         weekEventPanes.appendAll(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
         stage = new JFXApp3.PrimaryStage {
             title = "Calendar"
             val rootWidth = 1280
             val rootHeigth = 720
             scene = new Scene(rootWidth, rootHeigth + 20) {
+                stylesheets += getClass().getResource("styles.css").toExternalForm()
                 val leftPane = new FlowPane {
                     prefWidth_=(rootWidth*0.25)
                     prefHeight_=(rootHeigth)
@@ -45,7 +47,7 @@ object MainGUI extends JFXApp3:
 
                     background = Background.fill(Color.Crimson)
                     //border_=(Border.stroke(Color.DarkOrange))
-                    children = List(showPop)         
+                    children = List(showPop) 
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75)

@@ -3,7 +3,7 @@ package calendar_classes.service
 import calendar_classes._
 import scala.collection.mutable.Buffer
 import java.time._
-import java.awt.Color
+import scalafx.scene.paint.Color
 
 class Parser():
 
@@ -22,8 +22,8 @@ class Parser():
         val colorElems = elements(4)
         val color: Option[Color] = 
             if colorElems != "!empty!" then 
-                val rgb = colorElems.split("-")
-                Some(Color(rgb(0).toInt, rgb(1).toInt, rgb(2).toInt))
+                val rgb = colorElems.split("-").map(_.toLong)
+                Some(Color(rgb(0), rgb(1), rgb(2), 1))
             else None
 
         Event(name, Interval(start, `end`), stringTags, extra, color)

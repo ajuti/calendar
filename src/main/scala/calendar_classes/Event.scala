@@ -5,7 +5,7 @@ import calendar_classes.service.GetWeek
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.Map
 import java.time.*
-import java.awt.Color
+import scalafx.scene.paint.Color
 
 class Event(private val name: String, private var interval: Interval, stringTags: String = "!empty!", private var extraInfo: String = "!empty!", private var bannerColor: Option[Color] = None):
 
@@ -42,14 +42,14 @@ class Event(private val name: String, private var interval: Interval, stringTags
 
   def getColorString: String =
     this.bannerColor match
-      case None => "!empty!"
-      case Some(color) => s"${color.getRed()}-${color.getGreen()}-${color.getBlue()}"
+      case None => "!empty!"  
+      case Some(color) => s"${color.red}-${color.green}-${color.blue}"
   end getColorString
 
   // Sets the color for this event
-  def setColor(hexcode: String) = this.bannerColor = Some(Color.decode(hexcode))
+  //def setColor(hexcode: String) = this.bannerColor = Some(Color.decode(hexcode))
 
-  def setColor(r: Int, g: Int, b: Int) = this.bannerColor = Some(Color(r, g, b))
+  def setColor(r: Int, g: Int, b: Int) = this.bannerColor = Some(Color(r, g, b, 1))
 
   def removeColor() = this.bannerColor = None
 

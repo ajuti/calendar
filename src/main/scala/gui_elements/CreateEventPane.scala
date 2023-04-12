@@ -12,6 +12,7 @@ import scalafx.scene.paint._
 import scala.collection.mutable.Buffer
 import calendar_classes._
 import scalafx.scene.input.KeyCode.U
+import scalafx.collections.ObservableBuffer
 
 object CreateEventPane:
     
@@ -36,6 +37,7 @@ object CreateEventPane:
             }
     end initialize
 
-    def updateEventPanes(allPanes: Buffer[Pane]): Unit =
-        for c <- allPanes do
-        oneWeek.children += c
+    def addOnePane(event: Event, addTo: ObservableBuffer[Event]) =
+        addTo.addOne(event)
+    end addOnePane
+
