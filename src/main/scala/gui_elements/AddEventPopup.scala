@@ -21,8 +21,13 @@ import calendar_classes.Event
 import calendar_classes.Interval
 import scala.math._
 import scalafx.scene.input.KeyCode.S
+import java.{util => ju}
+import java.time.format.DateTimeParseException
 
 object WindowGenerator:
+
+    case class EmptyNameException(description: String) extends Exception(description)
+
     def genHours: ObservableBuffer[String] =
         val obsBuffer = new ObservableBuffer[String]()
         for c <- 0 to 23 do
@@ -243,22 +248,53 @@ object WindowGenerator:
                     layoutY = 257
                     value = Color.BlanchedAlmond
                 }
+                val errorLabelName = new Label {
+                    text = "event must have a name"
+                    font = new Font(11) {
+                        textFill = Color.Red
+                    }
+                    layoutX = 105
+                    layoutY = 3
+                    visible = false
+                }
+                val errorLabelTime = new Label {
+                    text = "incorrect time"
+                    font = new Font(11) {
+                        textFill = Color.Red
+                    }
+                    layoutX = 10
+                    layoutY = 125
+                    visible = false
+                }
+
                 val saveEvent = new Button {
                     text = "Add event"
                     layoutX = 50
                     layoutY = 360
                     onAction = () =>
-                        val freshE = new Event(
-                            nameTxtField.text.value,
-                            Interval(LocalDateTime.parse(startTimeDatePicker.getValue().toString() + "T" + startTimeCBoxHours.getValue() + ":" + startTimeCBoxMinutes.getValue()),
-                                     LocalDateTime.parse(endTimeDatePicker.getValue().toString() + "T" + endTimeCBoxHours.getValue() + ":" + endTimeCBoxMinutes.getValue())),
-                            tagsList.items.get().mkString("-"),
-                            extrainfoTxtField.text.get(),
-                            Some(colPicker.getValue())
-                        )
-                        calendar1.addEvent(freshE)
-                        CreateEventPane.addOnePane(freshE)
-                        close()
+                        errorLabelTime.visible = false
+                        errorLabelName.visible = false
+                        try
+                            val eventName = nameTxtField.text.getValue
+
+                            if eventName == "" then throw EmptyNameException("Name field was empty")
+
+                            val freshE = new Event(
+                                eventName,
+                                Interval(LocalDateTime.parse(startTimeDatePicker.getValue().toString() + "T" + startTimeCBoxHours.getValue() + ":" + startTimeCBoxMinutes.getValue()),
+                                         LocalDateTime.parse(endTimeDatePicker.getValue().toString() + "T" + endTimeCBoxHours.getValue() + ":" + endTimeCBoxMinutes.getValue())),
+                                tagsList.items.get().mkString("-"),
+                                extrainfoTxtField.text.get(),
+                                Some(colPicker.getValue())
+                            )
+                            calendar1.addEvent(freshE)
+                            CreateEventPane.addOnePane(freshE)
+                            close()
+                        catch
+                            case e: NullPointerException => errorLabelTime.visible = true
+                            case e: DateTimeParseException => errorLabelTime.visible = true
+                            case e: EmptyNameException => errorLabelName.visible = true
+
                 }
                 val cancelEvent = new Button {
                     text = "Cancel"
@@ -317,8 +353,13 @@ object WindowGenerator:
                                     tagsList,
                                     colPicker,
                                     saveEvent,
-                                    cancelEvent
+                                    cancelEvent,
+                                    errorLabelName,
+                                    errorLabelTime
                                     )
+                    handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
+                    endTimeCBoxHours.value = endTimeCBoxHours.items.get().head
+                    endTimeCBoxMinutes.value = endTimeCBoxMinutes.items.get().head
                 }
                 root = popupRootPane
             }
