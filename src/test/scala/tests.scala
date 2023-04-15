@@ -3,7 +3,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import calendar_classes._
 import calendar_classes.service._
 import java.time.*
-import java.awt.Color
+import scalafx.scene.paint.Color
 import scala.collection.mutable.Buffer
 import java.util.regex.Matcher
 import com.github.tototoshi.csv._
@@ -17,7 +17,7 @@ class EventTest extends AnyFlatSpec, Matchers:
     subject.setColor(10,10,10)
     assert(subject.getColor.nonEmpty)
     println(subject.getColor)
-    subject.setColor("#ab34de")
+    // subject.setColor("#ab34de")
     println(subject.getColor)
     val b = Color.GRAY
     println(b.getRed() + " " + b.getGreen() + " " + b.getBlue())
@@ -167,7 +167,7 @@ class WriterTest extends AnyFlatSpec, Matchers:
     // val events = Buffer[Event](Event("work", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("yksi", Interval(LocalDateTime.now(), LocalDateTime.now().plusHours(3)), bannerColor = Some(Color.BLACK)))
     // val fileOut = FileWriter("events.csv", events)
     val calendar = Calendar()
-    val events = Buffer[Event](Event("xdd", Interval(LocalDateTime.now().minusHours(2), LocalDateTime.now().plusHours(1)), extraInfo = "moro"), Event("aintnoway", Interval(LocalDateTime.now(), LocalDateTime.now().plusDays(2).plusHours(2)), bannerColor = Some(Color.BLACK)))
+    val events = Buffer[Event](Event("xdd", Interval(LocalDateTime.now().minusHours(2).withMinute(0).withSecond(0), LocalDateTime.now().plusHours(1).withMinute(0).withSecond(0)), extraInfo = "moro"), Event("aintnoway", Interval(LocalDateTime.now().withMinute(0).withSecond(0), LocalDateTime.now().plusDays(2).plusHours(2).withMinute(0).withSecond(0)), bannerColor = Some(Color.BLACK)))
     events.foreach(calendar.addEvent(_))
     calendar.upload()
   }

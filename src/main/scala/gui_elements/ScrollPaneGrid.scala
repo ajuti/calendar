@@ -15,9 +15,14 @@ import scalafx.event._
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.shape.Rectangle
 import javafx.scene.input.MouseDragEvent
-
 import scala.math._
-import gui_elements.MainGUI.weekEventPanes
+import gui_elements.WindowGenerator.genNewPopupFromClick
+
+var clickToEdit = false
+
+var eventToolTip = new Tooltip {
+    id = "tooltip"
+}
 
 val allDayLabels = Buffer[Label]()
 
@@ -30,7 +35,16 @@ val sep1 = new Separator {
     layoutY = 25
     layoutX = 47
 }
-
+val showPop = 
+    new Button("Add" + "\n" + "event") {
+        layoutX = 2
+        layoutY = 4
+        prefWidth = 43
+        prefHeight = 45
+        onAction = () =>
+            val newPopup = WindowGenerator.genNewPopup()
+            newPopup.show()
+    }
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
         val date = calendar1.getCurrentWeek.getInterval.start.plusDays(c)
@@ -51,6 +65,7 @@ val bannerBoxWeek = new Pane {
             layoutX = 46 + c * 130
         }
     prefHeight_=(50)
+    children += showPop
     children += sep1
     // background = Background.fill(Color.LightGreen)
 }
@@ -61,10 +76,7 @@ val oneDay = new VBox {
     // children +=
     background_=(Background.fill(Color.AliceBlue))
 }
-val weekEvents = new Pane {
-    for c <- weekEventPanes do
-        children += c
-}
+val weekEvents = new Pane
 
 val oneWeek = new Pane {
     prefHeight = 870
@@ -91,13 +103,16 @@ val oneWeek = new Pane {
             prefHeight_=(870)
             layoutX = 45 + c * 130
         }
-    /*for c <- allEventPanes do
-        children += c
-    */
     children += weekEvents
     background_=(Background.fill(Color.White))
 
-    onMouseClicked = (e:MouseEvent) => println(e.x + " " + e.y)
+    onMouseClicked = (e:MouseEvent) => 
+        // println(e.x + " " + e.y)
+        if !clickToEdit then
+            val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
+            clickedPopup.show()
+
+
     //onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)
     //onMouseDragOver = (e:MouseDragEvent) => println(e.x + " " + e.y)
         /*children += new Rectangle {

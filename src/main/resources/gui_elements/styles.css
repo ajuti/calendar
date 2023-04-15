@@ -1,3 +1,13 @@
 .banner .button {
     -fx-mark-color: black;
 }
+
+@keyframes effect {
+    0% {
+      visibility: visible;
+    }
+}
+
+#tooltip:hover {
+    animation: effect 1s infinite 2s;
+}

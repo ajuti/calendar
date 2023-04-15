@@ -15,14 +15,14 @@ class Parser():
         // name, time, stringTags, extra, color
         val elements = line.split(",")
         val name = elements.head
-        val start = LocalDateTime.parse(elements(1).takeWhile(_ != ';'))
-        val end = LocalDateTime.parse(elements(1).dropWhile(_ != ';').tail)
+        val start = LocalDateTime.parse(elements(1).takeWhile(_ != ';')).withNano(0)
+        val end = LocalDateTime.parse(elements(1).dropWhile(_ != ';').tail).withNano(0)
         val stringTags = elements(2)
         val extra = elements(3)
         val colorElems = elements(4)
         val color: Option[Color] = 
             if colorElems != "!empty!" then 
-                val rgb = colorElems.split("-").map(_.toLong)
+                val rgb = colorElems.split("-").map(_.toDouble)
                 Some(Color(rgb(0), rgb(1), rgb(2), 1))
             else None
 

@@ -22,7 +22,7 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
 
     def lengthInHours: Long = this.start.until(this.`end`, ChronoUnit.HOURS)
 
-    def lengthInDays: Long = this.start.until(this.`end`, ChronoUnit.DAYS)
+    def lengthInDays: Long = this.`end`.getDayOfYear() - this.start.getDayOfYear() + 1
 
     def lengthInMinutes: Long = this.start.until(this.`end`, ChronoUnit.MINUTES)
 

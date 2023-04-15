@@ -11,7 +11,6 @@ import scalafx.scene.layout._
 import scalafx.scene.paint._
 import gui_elements.MainGUI.calendar1
 import scala.collection.mutable.Buffer
-import gui_elements.MainGUI.weekEventPanes
 
 val rootHeigth = 720
 val rootWidth = 1280
@@ -27,9 +26,8 @@ val prevButton = new Button() {
 
     onAction = () =>
         calendar1.showPreviousWeek()
-        weekEventPanes.clear()
-        weekEventPanes.appendAll(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
-        weekEvents.children_=(weekEventPanes)
+        weekEvents.children.clear()
+        weekEvents.children_=(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
 
         label1.text = s"${calendar1.getCurrentDate.getMonth().toString().substring(0, 3)} ${calendar1.getCurrentDate.getYear()} | ${calendar1.getCurrentWeek.toString.toUpperCase()}"
         for c <- 0 to 6 do
@@ -41,10 +39,9 @@ val nextButton = new Button {
 
     onAction = () =>
         calendar1.showNextWeek()
-        println(calendar1.getCurrentWeek.getEvents)
-        weekEventPanes.clear()
-        weekEventPanes.appendAll(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
-        weekEvents.children_=(weekEventPanes)
+        weekEvents.children.clear()
+        weekEvents.children_=(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
+
 
         label1.text = s"${calendar1.getCurrentDate.getMonth().toString().substring(0, 3)} ${calendar1.getCurrentDate.getYear()} | ${calendar1.getCurrentWeek.toString.toUpperCase()}"
         for c <- 0 to 6 do
