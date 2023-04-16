@@ -17,6 +17,7 @@ import scalafx.scene.shape.Rectangle
 import javafx.scene.input.MouseDragEvent
 import scala.math._
 import gui_elements.WindowGenerator.genNewPopupFromClick
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 
 var clickToEdit = false
 
@@ -108,7 +109,7 @@ val oneWeek = new Pane {
 
     onMouseClicked = (e:MouseEvent) => 
         // println(e.x + " " + e.y)
-        if !clickToEdit then
+        if !clickToEdit && e.y > 30 then
             val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
             clickedPopup.show()
 
@@ -130,6 +131,8 @@ val scrollPaneDaily = new ScrollPane {
 }
 val scrollPaneWeekly = new ScrollPane {
     maxHeight = 560
+    prefWidth = rootWidth * 0.75 + 10
     content = oneWeek
     vvalue_=(0.6)
+    hbarPolicy = ScrollBarPolicy.Never
 }

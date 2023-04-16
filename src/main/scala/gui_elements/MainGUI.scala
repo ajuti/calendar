@@ -33,7 +33,7 @@ object MainGUI extends JFXApp3:
             title = "Calendar"
             val rootWidth = 1280
             val rootHeigth = 720
-            scene = new Scene(rootWidth, rootHeigth + 20) {
+            scene = new Scene(rootWidth + 12, rootHeigth + 12) {
                 stylesheets += getClass().getResource("styles.css").toExternalForm()
                 val leftPane = new FlowPane {
                     prefWidth_=(rootWidth*0.25)
@@ -44,7 +44,7 @@ object MainGUI extends JFXApp3:
                     children = List() 
                 }
                 val rightPane = new VBox {  
-                    prefWidth_=(rootWidth * 0.75)
+                    prefWidth_=(rootWidth * 0.75 + 12)
                     prefHeight_=(rootHeigth)
                     //maxWidth_=(rootWidth * 0.75 - 5)
                     //border_=(Border.stroke(Color.DarkKhaki))

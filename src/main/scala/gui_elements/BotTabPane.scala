@@ -13,6 +13,7 @@ import scalafx.scene.control.TabPane._
 
 val bannerPlusViewWeekly = new VBox {
     children = List(bannerBoxWeek, scrollPaneWeekly)
+    prefWidth = rootWidth * 0.75 + 12
 }
 
 val weeklyTab = new Tab {

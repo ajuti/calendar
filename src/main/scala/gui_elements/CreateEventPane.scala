@@ -13,13 +13,14 @@ import scala.collection.mutable.Buffer
 import calendar_classes._
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.input.MouseEvent
+import gui_elements.WindowGenerator.genNewPopupForEditing
 
 object CreateEventPane:
 
     def freshPane(c: Event): Pane = 
         val eventTime = c.getInterval
         def sameDay = 
-            eventTime.start.getDayOfYear() == eventTime.`end`.getDayOfYear() || eventTime.`end`.getHour() == 0 && eventTime.lengthInDays < 1
+            eventTime.start.getDayOfYear() == eventTime.`end`.getDayOfYear() || eventTime.`end`.getHour() == 0 && eventTime.`end`.getMinute() == 0 && eventTime.lengthInHours < 24
         new Pane {
             if sameDay then 
                 prefHeight_=(eventTime.lengthInMinutes / 15 * 8.75)
@@ -32,13 +33,19 @@ object CreateEventPane:
             layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
             children += new Label {
-                text = if sameDay && eventTime.lengthInHours > 1 then
-                            c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute())
+                text = if sameDay && eventTime.lengthInMinutes > 30 then
+                            if c.getName.length() > 15 then 
+                                (c.getName.substring(0, 15) + "...") + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.`end`.getMinute())
+                            else
+                                c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute())
+                        else if !sameDay || (sameDay && eventTime.lengthInMinutes == 30) then
+                            c.getName
                         else
-                            c.getName + "  " + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute())
+                            ""
+                maxWidth = 120
                 font = new Font(15)
                 layoutX = 3
-            } 
+            }
             border_=(Border.stroke(Color.Black))
             
             onMouseEntered = (e: MouseEvent) => {
@@ -46,13 +53,18 @@ object CreateEventPane:
                 val info = if c.getInfo != "!empty!" then c.getInfo else ""
                 val tags = if c.getTags != "!empty!" then c.getTags else ""
                 eventToolTip.text = 
-                    s"${c.getName}\n${eventTime.start.getHour()}:${eventTime.start.getMinute()}-${eventTime.end.getHour()}:${eventTime.`end`.getMinute()}\n${info}\n${tags}".trim()
+                    s"${c.getName}\n${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()}-${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}\n${info}\n${tags}".trim()
                 eventToolTip.show(this, e.getScreenX(), e.getScreenY() + 10)
             }
             onMouseExited = (e: MouseEvent) => {
                 clickToEdit = false
                 eventToolTip.hide()
                 eventToolTip.text = null
+            }
+            onMouseClicked = (e: MouseEvent) => {
+                val editWindow = genNewPopupForEditing(this, c)
+                editWindow.show()
+
             }
         }
     end freshPane

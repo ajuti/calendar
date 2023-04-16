@@ -60,15 +60,19 @@ object WindowGenerator:
             "45"
     end setStartMinsFromNull
 
+    def genNewPopupForEditing(pane: Pane, event: Event) = 
+        genNewPopup(event.getInterval.start, true, Some(event), pane)
+    end genNewPopupForEditing
+
     def genNewPopupFromClick(x: Double, y: Double) = 
         val week = calendar1.getCurrentWeek.getInterval
         genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))
 
-    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now()): Stage =
+    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None, existingPane: Pane = null): Stage =
         val addEventPopup = new Stage {
             width_=(270)
             height_=(430)
-            title = "Add new event"
+            title = if editing then "Edit event" else "Add new event"
             alwaysOnTop_=(true)
             scene = new Scene(270, 430) {
                 val defFont = new Font(12)
@@ -112,6 +116,7 @@ object WindowGenerator:
                     prefWidth = 140
                     layoutX = 100
                     layoutY = 17
+                    if editing then text = event.get.getName
                 }
                 val startTimeDatePicker: DatePicker = new DatePicker {
                     layoutX = 100
@@ -133,15 +138,18 @@ object WindowGenerator:
                     layoutY = 110
                     prefWidth = 140
                     value_=(
-                        if initDate.getHour() != 23 then
-                            initDate.toLocalDate()
+                        if editing then
+                            event.get.getInterval.`end`.toLocalDate()
                         else
-                            initDate.toLocalDate().plusDays(1)
+                            if initDate.getHour() != 23 then
+                                initDate.toLocalDate()
+                            else    
+                                initDate.toLocalDate().plusDays(1)
                         )
                     this.valueProperty().onChange(
                         if this.getValue().isAfter(startTimeDatePicker.getValue()) then
-                            updateEndTimeHours()
-                            updateEndTimeMinutes()
+                            endTimeCBoxHours.items = genHours
+                            endTimeCBoxMinutes.items = genMinutes
                         else
                             handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
                     )
@@ -174,7 +182,12 @@ object WindowGenerator:
                             +=(s"0$c")
                         else
                             +=(s"${c * 15}")
-                    value_=(setStartMinsFromNull(initDate))
+                    value_=(
+                        if editing then 
+                            initDate.getMinute().toString()
+                        else
+                            setStartMinsFromNull(initDate)
+                        )
                     layoutX = 175
                     layoutY = 74
                     prefWidth_=(65)
@@ -197,12 +210,17 @@ object WindowGenerator:
                     )
                 }   
                 val endTimeCBoxMinutes = new ComboBox[String] {
-                    for c <- 0 to 3 do
+                    /*for c <- 0 to 3 do
                         if c == 0 then
                             +=(s"0$c")
                         else
-                            +=(s"${c * 15}")
-                    value_=(setStartMinsFromNull(initDate))
+                            +=(s"${c * 15}") */
+                    value_=(
+                        if editing then
+                            event.get.getInterval.`end`.getMinute().toString()
+                        else
+                            setStartMinsFromNull(initDate)
+                        )
                     layoutX = 175
                     layoutY = 137
                     prefWidth_=(65)
@@ -216,6 +234,8 @@ object WindowGenerator:
                     prefHeight = 50
                     layoutX = 100
                     layoutY = 300
+                    if editing then
+                        text = event.get.getInfo
                 }
                 val tagsTxtField = new TextField {
                     promptText = "Tags (optional)"
@@ -239,6 +259,8 @@ object WindowGenerator:
                     layoutX = 100
                     layoutY = 200
                     items = new ObservableBuffer()
+                    if editing && event.get.getTags != "!empty!" then
+                        event.get.getTags.split(';').foreach(this.items.get().add(_))
                     onMouseClicked = (e: MouseEvent) => 
                         if e.getClickCount() == 2 then
                             this.items.get().remove(this.selectionModel.get().getSelectedIndex())
@@ -246,7 +268,11 @@ object WindowGenerator:
                 val colPicker = new ColorPicker {
                     layoutX = 100
                     layoutY = 257
-                    value = Color.BlanchedAlmond
+                    value = 
+                        if editing then
+                            event.get.getColor.getOrElse(Color.BlanchedAlmond)
+                        else
+                            Color.BlanchedAlmond
                 }
                 val errorLabelName = new Label {
                     text = "event must have a name"
@@ -268,7 +294,8 @@ object WindowGenerator:
                 }
 
                 val saveEvent = new Button {
-                    text = "Add event"
+                    text = 
+                        if editing then "Save changes" else "Add event"
                     layoutX = 50
                     layoutY = 360
                     onAction = () =>
@@ -287,8 +314,12 @@ object WindowGenerator:
                                 extrainfoTxtField.text.get(),
                                 Some(colPicker.getValue())
                             )
+                            if editing then
+                                calendar1.deleteEvent(event.get)
+                                weekEvents.children -= existingPane
                             calendar1.addEvent(freshE)
-                            CreateEventPane.addOnePane(freshE)
+                            if freshE.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
+                                CreateEventPane.addOnePane(freshE)
                             close()
                         catch
                             case e: NullPointerException => errorLabelTime.visible = true
@@ -358,8 +389,14 @@ object WindowGenerator:
                                     errorLabelTime
                                     )
                     handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
-                    endTimeCBoxHours.value = endTimeCBoxHours.items.get().head
-                    endTimeCBoxMinutes.value = endTimeCBoxMinutes.items.get().head
+                    if editing then
+                        endTimeCBoxHours.value = event.get.getInterval.`end`.getHour().toString()
+                    else    
+                        if endTimeCBoxHours.items.get().size() >= 2 then 
+                            endTimeCBoxHours.value = endTimeCBoxHours.items.get().apply(1) 
+                        else 
+                            endTimeCBoxHours.value = "00"
+                    endTimeCBoxMinutes.value = startTimeCBoxMinutes.getValue()
                 }
                 root = popupRootPane
             }
