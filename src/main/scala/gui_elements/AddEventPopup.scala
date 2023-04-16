@@ -263,7 +263,10 @@ object WindowGenerator:
                         event.get.getTags.split(';').foreach(this.items.get().add(_))
                     onMouseClicked = (e: MouseEvent) => 
                         if e.getClickCount() == 2 then
-                            this.items.get().remove(this.selectionModel.get().getSelectedIndex())
+                            try
+                                this.items.get().remove(this.selectionModel.get().getSelectedIndex())
+                            catch
+                                case e: IndexOutOfBoundsException => println("Nothing to remove")
                 }
                 val colPicker = new ColorPicker {
                     layoutX = 100
@@ -303,23 +306,35 @@ object WindowGenerator:
                         errorLabelName.visible = false
                         try
                             val eventName = nameTxtField.text.getValue
-
                             if eventName == "" then throw EmptyNameException("Name field was empty")
-
-                            val freshE = new Event(
-                                eventName,
-                                Interval(LocalDateTime.parse(startTimeDatePicker.getValue().toString() + "T" + startTimeCBoxHours.getValue() + ":" + startTimeCBoxMinutes.getValue()),
-                                         LocalDateTime.parse(endTimeDatePicker.getValue().toString() + "T" + endTimeCBoxHours.getValue() + ":" + endTimeCBoxMinutes.getValue())),
-                                tagsList.items.get().mkString("-"),
-                                extrainfoTxtField.text.get(),
-                                Some(colPicker.getValue())
-                            )
+                            val eventTime = Interval(LocalDateTime.parse(startTimeDatePicker.getValue().toString() + "T" + startTimeCBoxHours.getValue() + ":" + startTimeCBoxMinutes.getValue()),
+                                             LocalDateTime.parse(endTimeDatePicker.getValue().toString() + "T" + endTimeCBoxHours.getValue() + ":" + endTimeCBoxMinutes.getValue()))
+                            val tagsToBeAdded = tagsList.items.get().mkString("-")
+                            val extraInformation = if extrainfoTxtField.text.get() != "!empty!" then extrainfoTxtField.text.get() else ""
+                            
                             if editing then
-                                calendar1.deleteEvent(event.get)
-                                weekEvents.children -= existingPane
-                            calendar1.addEvent(freshE)
-                            if freshE.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
-                                CreateEventPane.addOnePane(freshE)
+                                val edited = event.get
+                                edited.setName(eventName)
+                                edited.setNewInterval(eventTime)
+                                edited.removeAllTags()
+                                tagsToBeAdded.split('-').foreach(edited.addTag(_))
+                                edited.addInfo(extraInformation)
+                                edited.setColor(colPicker.getValue())
+
+                                if edited.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
+                                    weekEvents.children -= existingPane
+                                    CreateEventPane.addOnePane(edited)
+                            else
+                                val freshE = new Event(
+                                    eventName,
+                                    eventTime,
+                                    tagsToBeAdded,
+                                    extraInformation,
+                                    Some(colPicker.getValue())
+                                )
+                                calendar1.addEvent(freshE)    
+                                if freshE.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
+                                    CreateEventPane.addOnePane(freshE)
                             close()
                         catch
                             case e: NullPointerException => errorLabelTime.visible = true
@@ -333,6 +348,9 @@ object WindowGenerator:
                     layoutY = 360
                     onAction = () =>
                         close()
+                }
+                val deleteEvent = new Button {
+                    
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {

@@ -33,17 +33,17 @@ object CreateEventPane:
             layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
             children += new Label {
-                text = if sameDay && eventTime.lengthInMinutes > 30 then
+                text = if sameDay && eventTime.lengthInMinutes >= 60 then
                             if c.getName.length() > 15 then 
                                 (c.getName.substring(0, 15) + "...") + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.`end`.getMinute())
                             else
                                 c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute())
-                        else if !sameDay || (sameDay && eventTime.lengthInMinutes == 30) then
+                        else if !sameDay || (sameDay && eventTime.lengthInMinutes >= 30) then
                             c.getName
                         else
                             ""
                 maxWidth = 120
-                font = new Font(15)
+                font = new Font(13)
                 layoutX = 3
             }
             border_=(Border.stroke(Color.Black))
