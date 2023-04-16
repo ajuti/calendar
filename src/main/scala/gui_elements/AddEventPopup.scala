@@ -67,7 +67,7 @@ object WindowGenerator:
 
     def genNewPopupFromClick(x: Double, y: Double) = 
         val week = calendar1.getCurrentWeek.getInterval
-        genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))
+        genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))    
 
     def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None, existingPane: Pane = null): Stage =
         val addEventPopup = new Stage {
@@ -83,6 +83,7 @@ object WindowGenerator:
                     endTimeCBoxHours.items_=(genHours)
                     endTimeCBoxHours.value_=("00")
                     endTimeCBoxMinutes.items_=(genMinutes)
+                    endTimeCBoxMinutes.value_=(startTimeCBoxMinutes.getValue())
                 end shiftDay
                 
                 // This is called only when the start date is the same as the end date
@@ -421,15 +422,19 @@ object WindowGenerator:
                                     errorLabelTime,
                                     deleteEvent
                                     )
-                    handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
                     if editing then
                         endTimeCBoxHours.value = event.get.getInterval.`end`.getHour().toString()
-                    else    
-                        if endTimeCBoxHours.items.get().size() >= 2 then 
-                            endTimeCBoxHours.value = endTimeCBoxHours.items.get().apply(1) 
-                        else 
-                            endTimeCBoxHours.value = "00"
-                    endTimeCBoxMinutes.value = startTimeCBoxMinutes.getValue()
+                        if !sameDay(event.get.getInterval) then 
+                            endTimeCBoxHours.items = genHours
+                    else if !startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then
+                        endTimeCBoxHours.items = genHours
+                        endTimeCBoxHours.value = "00"
+                    else
+                        handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
+                        if startTimeCBoxMinutes.getValue != "45" then
+                            endTimeCBoxHours.value = endTimeCBoxHours.items.get().drop(1).headOption.getOrElse("23")
+                        else
+                            endTimeCBoxHours.value = endTimeCBoxHours.items.get().headOption.getOrElse("23")
                 }
                 root = popupRootPane
             }

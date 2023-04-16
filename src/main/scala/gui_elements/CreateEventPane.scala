@@ -20,10 +20,9 @@ object CreateEventPane:
 
     def freshPane(c: Event): Pane = 
         val eventTime = c.getInterval
-        def sameDay = 
-            eventTime.start.getDayOfYear() == eventTime.`end`.getDayOfYear() || eventTime.`end`.getHour() == 0 && eventTime.`end`.getMinute() == 0 && eventTime.lengthInHours < 24
+        
         new Pane {
-            if sameDay then 
+            if sameDay(eventTime) then 
                 prefHeight_=(eventTime.lengthInMinutes / 15 * 8.75)
                 prefWidth = 125
                 layoutY_=(30 + eventTime.start.getHour() * 35 + (eventTime.start.getMinute()/15) * 8.75)
@@ -34,12 +33,12 @@ object CreateEventPane:
             layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
             children += new Label {
-                text = if sameDay && eventTime.lengthInMinutes >= 60 then
+                text = if sameDay(eventTime) && eventTime.lengthInMinutes >= 60 then
                             if c.getName.length() > 15 then 
                                 (c.getName.substring(0, 15) + "...") + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.`end`.getMinute())
                             else
-                                c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute())
-                        else if !sameDay || (sameDay && eventTime.lengthInMinutes >= 30) then
+                                c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.end.getMinute())
+                        else if !sameDay(eventTime) || (sameDay(eventTime) && eventTime.lengthInMinutes >= 30) then
                             c.getName
                         else
                             ""
