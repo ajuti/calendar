@@ -23,6 +23,7 @@ import scala.math._
 import scalafx.scene.input.KeyCode.S
 import java.{util => ju}
 import java.time.format.DateTimeParseException
+import gui_elements.MainGUI.popupOpen
 
 object WindowGenerator:
 
@@ -299,7 +300,8 @@ object WindowGenerator:
                 val saveEvent = new Button {
                     text = 
                         if editing then "Save changes" else "Add event"
-                    layoutX = 50
+                    layoutX = 
+                        if editing then 30 else 50
                     layoutY = 360
                     onAction = () =>
                         errorLabelTime.visible = false
@@ -336,6 +338,7 @@ object WindowGenerator:
                                 if freshE.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
                                     CreateEventPane.addOnePane(freshE)
                             close()
+                            popupOpen = false
                         catch
                             case e: NullPointerException => errorLabelTime.visible = true
                             case e: DateTimeParseException => errorLabelTime.visible = true
@@ -344,13 +347,24 @@ object WindowGenerator:
                 }
                 val cancelEvent = new Button {
                     text = "Cancel"
-                    layoutX = 150
+                    layoutX = 
+                        if editing then 127 else 150
                     layoutY = 360
                     onAction = () =>
                         close()
+                        popupOpen = false
                 }
                 val deleteEvent = new Button {
-                    
+                    text = "Delete"
+                    layoutX = 185
+                    layoutY = 360
+                    disable = !editing
+                    visible = editing
+                    onAction = () =>
+                        calendar1.deleteEvent(event.get)
+                        weekEvents.children -= existingPane
+                        close()
+                        popupOpen = false
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {
@@ -404,7 +418,8 @@ object WindowGenerator:
                                     saveEvent,
                                     cancelEvent,
                                     errorLabelName,
-                                    errorLabelTime
+                                    errorLabelTime,
+                                    deleteEvent
                                     )
                     handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
                     if editing then

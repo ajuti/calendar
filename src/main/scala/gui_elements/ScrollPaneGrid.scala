@@ -18,6 +18,7 @@ import javafx.scene.input.MouseDragEvent
 import scala.math._
 import gui_elements.WindowGenerator.genNewPopupFromClick
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import gui_elements.MainGUI.popupOpen
 
 var clickToEdit = false
 
@@ -43,8 +44,10 @@ val showPop =
         prefWidth = 43
         prefHeight = 45
         onAction = () =>
-            val newPopup = WindowGenerator.genNewPopup()
-            newPopup.show()
+            if !popupOpen then
+                val newPopup = WindowGenerator.genNewPopup()
+                newPopup.show()
+                popupOpen = true
     }
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
@@ -109,9 +112,11 @@ val oneWeek = new Pane {
 
     onMouseClicked = (e:MouseEvent) => 
         // println(e.x + " " + e.y)
-        if !clickToEdit && e.y > 30 then
+        if !popupOpen && !clickToEdit && e.y > 30 then
             val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
             clickedPopup.show()
+            popupOpen = true
+            
 
 
     //onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)

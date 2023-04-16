@@ -26,6 +26,7 @@ import scalafx.collections.ObservableBuffer.Remove
 
 object MainGUI extends JFXApp3:
     val calendar1 = new Calendar
+    var popupOpen = false
     def start(): Unit = 
 
         weekEvents.children_=(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))

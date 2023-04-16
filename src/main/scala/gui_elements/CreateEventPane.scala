@@ -14,6 +14,7 @@ import calendar_classes._
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.input.MouseEvent
 import gui_elements.WindowGenerator.genNewPopupForEditing
+import gui_elements.MainGUI.popupOpen
 
 object CreateEventPane:
 
@@ -62,8 +63,10 @@ object CreateEventPane:
                 eventToolTip.text = null
             }
             onMouseClicked = (e: MouseEvent) => {
-                val editWindow = genNewPopupForEditing(this, c)
-                editWindow.show()
+                if !popupOpen then
+                    val editWindow = genNewPopupForEditing(this, c)
+                    editWindow.show()
+                    popupOpen = true
 
             }
         }
