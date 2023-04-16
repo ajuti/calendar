@@ -20,6 +20,7 @@ import scala.collection.mutable.Buffer
 import scalafx.event.ActionEvent
 import scalafx.collections.ObservableBuffer.Add
 import scalafx.collections.ObservableBuffer.Remove
+import scalafx.application.JFXApp3.PrimaryStage
 
 
 
@@ -27,9 +28,11 @@ import scalafx.collections.ObservableBuffer.Remove
 object MainGUI extends JFXApp3:
     val calendar1 = new Calendar
     var popupOpen = false
+    var primaryStage = new PrimaryStage
     def start(): Unit = 
 
-        weekEvents.children_=(CreateEventPane.initialize(calendar1.getCurrentWeek.getEvents))
+        weekEvents.children_=(CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents))
+        dayEvents.children_=(CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents))
         stage = new JFXApp3.PrimaryStage {
             title = "Calendar"
             val rootWidth = 1280
@@ -63,6 +66,7 @@ object MainGUI extends JFXApp3:
                 //resizable_=(false)
             }
         }
+        primaryStage = this.stage
             
     
 

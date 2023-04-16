@@ -7,6 +7,10 @@ import scala.collection.mutable.Buffer
 class Day(calendar: Calendar, private val interval: Interval):
   private val events = EventFilter.getDayEvents(calendar, getLdt)
 
+  def updateEvents() = 
+    events.clear()
+    events.addAll(EventFilter.getDayEvents(calendar, getLdt))
+
   def getInterval = this.interval
 
   def getLdt: LocalDateTime = interval.start

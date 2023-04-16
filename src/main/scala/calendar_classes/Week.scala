@@ -5,7 +5,11 @@ import scala.collection.mutable.Buffer
 
 class Week(calendar: Calendar, interval: Interval):
   private val events = EventFilter.getWeekEvents(calendar, interval)
-  
+
+  def updateEvents() = 
+    events.clear()
+    events.addAll(EventFilter.getWeekEvents(calendar, interval))
+
   def getYearNum: Int = interval.start.getYear()
 
   def getInterval = this.interval

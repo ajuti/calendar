@@ -15,17 +15,21 @@ val bannerPlusViewWeekly = new VBox {
     children = List(bannerBoxWeek, scrollPaneWeekly)
     prefWidth = rootWidth * 0.75 + 12
 }
-
+val bannerPlusViewDaily = new VBox {
+    children = List(bannerBoxDay, scrollPaneDaily)
+    prefWidth = rootWidth * 0.75 + 12
+}
 val weeklyTab = new Tab {
     text = "Weekly"
     content = bannerPlusViewWeekly
 }
 val dailyTab = new Tab {
     text = "Daily"
-    content = scrollPaneDaily
+    content = bannerPlusViewDaily
 }
 val botPane = new TabPane {
     tabs = List(weeklyTab, dailyTab)
     tabClosingPolicy_=(TabClosingPolicy.Unavailable)
     prefHeight_=(850)
+    
 }

@@ -24,10 +24,12 @@ import scalafx.scene.input.KeyCode.S
 import java.{util => ju}
 import java.time.format.DateTimeParseException
 import gui_elements.MainGUI.popupOpen
+import scala.languageFeature.existentials
 
 object WindowGenerator:
 
     case class EmptyNameException(description: String) extends Exception(description)
+    case class EmptyTagFieldException(description: String) extends Exception(description)
 
     def genHours: ObservableBuffer[String] =
         val obsBuffer = new ObservableBuffer[String]()
@@ -61,15 +63,28 @@ object WindowGenerator:
             "45"
     end setStartMinsFromNull
 
-    def genNewPopupForEditing(pane: Pane, event: Event) = 
-        genNewPopup(event.getInterval.start, true, Some(event), pane)
+    def genNewPopupForEditing(event: Event) = 
+        genNewPopup(event.getInterval.start, true, Some(event))
     end genNewPopupForEditing
 
-    def genNewPopupFromClick(x: Double, y: Double) = 
+    def genNewPopupFromClick(x: Double, y: Double, addingDay: Boolean = false) =     
         val week = calendar1.getCurrentWeek.getInterval
-        genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))    
+        val day = calendar1.getCurrentDay.getInterval
+        if addingDay then
+            genNewPopup(day.start.withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))
+        else    
+            genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))
+    end genNewPopupFromClick
 
-    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None, existingPane: Pane = null): Stage =
+    def updatePanes() = 
+        calendar1.getCurrentDay.updateEvents()
+        calendar1.getCurrentWeek.updateEvents()
+        weekEvents.children.clear()
+        dayEvents.children.clear()
+        weekEvents.children = CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
+        dayEvents.children = CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
+
+    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None): Stage =
         val addEventPopup = new Stage {
             width_=(270)
             height_=(430)
@@ -185,8 +200,11 @@ object WindowGenerator:
                         else
                             +=(s"${c * 15}")
                     value_=(
-                        if editing then 
-                            initDate.getMinute().toString()
+                        if editing then
+                            if initDate.getMinute() != 0 then
+                                initDate.getMinute().toString()
+                            else 
+                                "00"
                         else
                             setStartMinsFromNull(initDate)
                         )
@@ -219,7 +237,10 @@ object WindowGenerator:
                             +=(s"${c * 15}") */
                     value_=(
                         if editing then
-                            event.get.getInterval.`end`.getMinute().toString()
+                            if event.get.getInterval.`end`.getMinute() != 0 then
+                                event.get.getInterval.`end`.getMinute().toString()
+                            else
+                                "00"
                         else
                             setStartMinsFromNull(initDate)
                         )
@@ -237,7 +258,8 @@ object WindowGenerator:
                     layoutX = 100
                     layoutY = 300
                     if editing then
-                        text = event.get.getInfo
+                        text = 
+                            if event.get.getInfo != "!empty!" then event.get.getInfo else ""
                 }
                 val tagsTxtField = new TextField {
                     promptText = "Tags (optional)"
@@ -253,7 +275,13 @@ object WindowGenerator:
                     layoutX = 215
                     layoutY = 173
                     onAction = () =>
-                        tagsList.items.get().add(tagsTxtField.text.value)
+                        try 
+                            val tags = tagsTxtField.text.value.trim()
+                            if tags.isEmpty() then throw EmptyTagFieldException("The text field was empty")
+                            tagsList.items.get().add(tagsTxtField.text.value.trim())
+                        catch
+                            case e: EmptyTagFieldException =>
+                                errorLabelTags.visible = true
                 }
                 val tagsList = new ListView(List[String]()) {
                     prefWidth = 140
@@ -297,6 +325,15 @@ object WindowGenerator:
                     layoutY = 125
                     visible = false
                 }
+                val errorLabelTags = new Label {
+                    text = "can't be empty"
+                    font = new Font(11) {
+                        textFill = Color.Red
+                    }
+                    layoutX = 10
+                    layoutY = 190
+                    visible = false
+                }
 
                 val saveEvent = new Button {
                     text = 
@@ -307,6 +344,7 @@ object WindowGenerator:
                     onAction = () =>
                         errorLabelTime.visible = false
                         errorLabelName.visible = false
+                        errorLabelTags.visible = false
                         try
                             val eventName = nameTxtField.text.getValue
                             if eventName == "" then throw EmptyNameException("Name field was empty")
@@ -320,13 +358,11 @@ object WindowGenerator:
                                 edited.setName(eventName)
                                 edited.setNewInterval(eventTime)
                                 edited.removeAllTags()
-                                tagsToBeAdded.split('-').foreach(edited.addTag(_))
-                                edited.addInfo(extraInformation)
+                                tagsToBeAdded.split('-').foreach(x => if x.nonEmpty then edited.addTag(x))
+                                if extraInformation != "!empty!" then edited.addInfo(extraInformation) else ""
                                 edited.setColor(colPicker.getValue())
 
-                                if edited.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
-                                    weekEvents.children -= existingPane
-                                    CreateEventPane.addOnePane(edited)
+                                updatePanes()
                             else
                                 val freshE = new Event(
                                     eventName,
@@ -336,8 +372,7 @@ object WindowGenerator:
                                     Some(colPicker.getValue())
                                 )
                                 calendar1.addEvent(freshE)    
-                                if freshE.getInterval.intersects(calendar1.getCurrentWeek.getInterval) then
-                                    CreateEventPane.addOnePane(freshE)
+                                updatePanes()
                             close()
                             popupOpen = false
                         catch
@@ -363,7 +398,6 @@ object WindowGenerator:
                     visible = editing
                     onAction = () =>
                         calendar1.deleteEvent(event.get)
-                        weekEvents.children -= existingPane
                         close()
                         popupOpen = false
                 }
@@ -420,12 +454,15 @@ object WindowGenerator:
                                     cancelEvent,
                                     errorLabelName,
                                     errorLabelTime,
-                                    deleteEvent
+                                    deleteEvent,
+                                    errorLabelTags
                                     )
                     if editing then
-                        endTimeCBoxHours.value = event.get.getInterval.`end`.getHour().toString()
+                        val hour = event.get.getInterval.`end`.getHour()
+                        endTimeCBoxHours.value = if hour >= 10 then hour.toString() else s"0${hour}"
                         if !sameDay(event.get.getInterval) then 
                             endTimeCBoxHours.items = genHours
+                        updateEndTimeHours()
                     else if !startTimeDatePicker.getValue().isEqual(endTimeDatePicker.getValue()) then
                         endTimeCBoxHours.items = genHours
                         endTimeCBoxHours.value = "00"

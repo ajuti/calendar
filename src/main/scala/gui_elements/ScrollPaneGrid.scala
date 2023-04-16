@@ -19,6 +19,7 @@ import scala.math._
 import gui_elements.WindowGenerator.genNewPopupFromClick
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import gui_elements.MainGUI.popupOpen
+import gui_elements.WindowGenerator
 
 var clickToEdit = false
 
@@ -30,14 +31,20 @@ val allDayLabels = Buffer[Label]()
 
 val allHolidayLabels = Buffer[Label]()
 
-var singleDayLabel = new Label
+var singleDayLabel = new Label {
+    val day = calendar1.getCurrentDay.getLdt
+    text = s"${day.getDayOfWeek().toString().toUpperCase()} ${day.getDayOfMonth()}.${day.getMonthValue()}."
+    font = new Font(20)
+    prefWidth = rootWidth * 0.75 - 45
+    alignment = Pos.Center
+}
 
-val sep1 = new Separator {
+def sep1 = new Separator {
     prefWidth_=(rootWidth * 0.75 - 47)
     layoutY = 25
     layoutX = 47
 }
-val showPop = 
+def showPop = 
     new Button("Add" + "\n" + "event") {
         layoutX = 2
         layoutY = 4
@@ -73,18 +80,25 @@ val bannerBoxWeek = new Pane {
     children += sep1
     // background = Background.fill(Color.LightGreen)
 }
-
-val oneDay = new VBox {
-    prefHeight_=(625)
-    prefWidth_=(rootWidth * 0.75)
-    // children +=
-    background_=(Background.fill(Color.AliceBlue))
+val bannerBoxDay = new Pane {
+    val date = calendar1.getCurrentDay.getLdt
+    children += new Pane {
+        layoutX = 45
+        prefHeight_=(25)
+        prefWidth_=(rootWidth * 0.75 - 45)
+        children += singleDayLabel
+    }
+    prefHeight_=(50)
+    children += showPop
+    children += sep1
+    // background = Background.fill(Color.LightGreen)
 }
+
 val weekEvents = new Pane
 
-val oneWeek = new Pane {
-    prefHeight = 870
-    prefWidth = rootWidth * 0.75
+val dayEvents = new Pane
+
+def gridView = new Pane { 
     for c <- 0 to 23 do
         children += new Label {
             if c < 10 then
@@ -101,6 +115,24 @@ val oneWeek = new Pane {
             layoutX = 38
             opacity_=(0.3)
         }
+}
+val oneDay = new Pane {
+    prefHeight_=(870)
+    prefWidth_=(rootWidth * 0.75)
+    children += gridView
+    children += dayEvents
+    background_=(Background.fill(Color.White))
+
+    onMouseClicked = (e:MouseEvent) => 
+        if !popupOpen && !clickToEdit && e.y > 30 then
+            val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y, true)
+            clickedPopup.show()
+            popupOpen = true
+}
+val oneWeek = new Pane {
+    prefHeight = 870
+    prefWidth = rootWidth * 0.75
+    children += gridView
     for c <- 0 to 6 do
         children += new Separator {
             orientation_=(Orientation.Vertical)
@@ -111,7 +143,6 @@ val oneWeek = new Pane {
     background_=(Background.fill(Color.White))
 
     onMouseClicked = (e:MouseEvent) => 
-        // println(e.x + " " + e.y)
         if !popupOpen && !clickToEdit && e.y > 30 then
             val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
             clickedPopup.show()
@@ -133,6 +164,9 @@ val oneWeek = new Pane {
 val scrollPaneDaily = new ScrollPane {
     maxHeight_=(560)
     content = oneDay
+    prefWidth = rootWidth * 0.75 + 10
+    vvalue = 0.6
+    hbarPolicy = ScrollBarPolicy.Never
 }
 val scrollPaneWeekly = new ScrollPane {
     maxHeight = 560
