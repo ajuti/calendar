@@ -398,6 +398,7 @@ object WindowGenerator:
                     visible = editing
                     onAction = () =>
                         calendar1.deleteEvent(event.get)
+                        updatePanes()
                         close()
                         popupOpen = false
                 }
