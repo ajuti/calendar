@@ -14,8 +14,7 @@ import scala.collection.mutable.Buffer
 import scalafx.stage._
 import scalafx.event._
 import scalafx.scene.input.MouseEvent
-import scalafx.collections.ObservableArray
-import scalafx.collections.ObservableBuffer
+import scalafx.collections._
 import java.time._
 import calendar_classes.Event
 import calendar_classes.Interval
@@ -81,8 +80,14 @@ object WindowGenerator:
         calendar1.getCurrentWeek.updateEvents()
         weekEvents.children.clear()
         dayEvents.children.clear()
-        weekEvents.children = CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
-        dayEvents.children = CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
+        weekBannerEvents.children.clear()
+        dayBannerEvents.children.clear()
+        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
+        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
+        for i <- weekBannerEvents.children.indices do
+            weekBannerEvents.children(i).layoutY = 2 + i * 20
+        for i <- dayBannerEvents.children.indices do
+            dayBannerEvents.children(i).layoutY = 2 + i * 20
 
     def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None): Stage =
         val addEventPopup = new Stage {
@@ -140,6 +145,7 @@ object WindowGenerator:
                     layoutY = 47
                     prefWidth = 140     
                     value_=(initDate.toLocalDate())
+                    editable = false
                     this.valueProperty().onChange(
                         if this.getValue().isBefore(endTimeDatePicker.getValue()) then
                             endTimeCBoxHours.items = genHours
@@ -154,6 +160,7 @@ object WindowGenerator:
                     layoutX = 100
                     layoutY = 110
                     prefWidth = 140
+                    editable = false
                     value_=(
                         if editing then
                             event.get.getInterval.`end`.toLocalDate()
@@ -358,6 +365,7 @@ object WindowGenerator:
                                 edited.setName(eventName)
                                 edited.setNewInterval(eventTime)
                                 edited.removeAllTags()
+                                println(tagsToBeAdded.split('-').size)
                                 tagsToBeAdded.split('-').foreach(x => if x.nonEmpty then edited.addTag(x))
                                 if extraInformation != "!empty!" then edited.addInfo(extraInformation) else ""
                                 edited.setColor(colPicker.getValue())
@@ -476,6 +484,8 @@ object WindowGenerator:
                 }
                 root = popupRootPane
             }
+            onCloseRequest = () => 
+                popupOpen = false
             resizable_=(false)
         }
         addEventPopup

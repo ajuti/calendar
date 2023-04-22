@@ -11,6 +11,7 @@ import scalafx.scene.layout._
 import scalafx.scene.paint._
 import gui_elements.MainGUI.calendar1
 import scala.collection.mutable.Buffer
+import gui_elements.WindowGenerator.updatePanes
 
 def updateLabels() =
         label1.text = s"${calendar1.getCurrentDate.getMonth().toString().substring(0, 3)} ${calendar1.getCurrentDate.getYear()} | ${calendar1.getCurrentWeek.toString.toUpperCase()}"
@@ -40,11 +41,8 @@ val prevButton = new Button() {
         if dailyTab.isSelected() then
             calendar1.showPreviousDay()
 
-        weekEvents.children.clear()
-        weekEvents.children_=(CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents))
-        dayEvents.children.clear()
-        dayEvents.children = CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
-
+        
+        updatePanes()
         updateLabels()
 }
 val nextButton = new Button {
@@ -57,11 +55,7 @@ val nextButton = new Button {
         if dailyTab.isSelected() then
             calendar1.showNextDay()
         
-        weekEvents.children.clear()
-        weekEvents.children_=(CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents))
-        dayEvents.children.clear()
-        dayEvents.children = CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
-
+        updatePanes()
         updateLabels()
 }
 val topPane = new HBox {

@@ -31,21 +31,21 @@ object MainGUI extends JFXApp3:
     var primaryStage = new PrimaryStage
     def start(): Unit = 
 
-        weekEvents.children_=(CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents))
-        dayEvents.children_=(CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents))
+        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
+        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
         stage = new JFXApp3.PrimaryStage {
             title = "Calendar"
             val rootWidth = 1280
             val rootHeigth = 720
             scene = new Scene(rootWidth + 12, rootHeigth + 12) {
                 stylesheets += getClass().getResource("styles.css").toExternalForm()
-                val leftPane = new FlowPane {
+                val leftPane = new VBox {
                     prefWidth_=(rootWidth*0.25)
                     prefHeight_=(rootHeigth)
 
                     background = Background.fill(Color.Crimson)
                     //border_=(Border.stroke(Color.DarkOrange))
-                    children = List() 
+                    children = List(searchRootPane) 
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75 + 12)

@@ -11,11 +11,16 @@ import scalafx.scene.paint._
 import scalafx.stage._
 import scalafx.event.ActionEvent
 import gui_elements.MainGUI.primaryStage
+import gui_elements.MainGUI.calendar1
 
 val settings = new MenuItem("Settings")
 val exit = new MenuItem("Exit") {
     onAction = () =>
         primaryStage.close()
+}
+val upload = new MenuItem("Upload") {
+    onAction = () =>
+        calendar1.upload()
 }
 
 val default = new MenuItem("Default")
@@ -25,7 +30,7 @@ val saatana = new MenuItem("saatana")
 
 
 val menu1 = new Menu("Calendar") {
-    items_=(List(settings, exit))
+    items_=(List(upload, settings, exit))
 }
 val menu2 = new Menu("Theme") {
     items_=(List(default, light, dark, saatana))

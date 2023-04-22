@@ -29,7 +29,47 @@ var eventToolTip = new Tooltip {
 
 val allDayLabels = Buffer[Label]()
 
-val allHolidayLabels = Buffer[Label]()
+def getGoldenNum(year: Int) =
+    (year % 19) + 1
+end getGoldenNum
+
+val goldenDates = Map[Int, (Int, Int)](
+    0 -> (27, 3),
+    1 -> (14, 4),
+    2 -> (3, 4),
+    3 -> (23, 3),
+    
+)
+
+val holidayDates = Map[(Int, Int), String](
+    (1, 1)      -> "New Years Day",
+    (25, 12)    -> "Christmas Day",
+)
+
+val allHolidayLabels = Buffer[Label](
+    new Label("New Years Day"),
+    new Label("Christmas Day"),
+    new Label("Good Friday"),
+    new Label("Easter Sunday"),
+    new Label("Easter Monday"),
+    new Label("Ascension Day"),
+    new Label("Whit Sunday"),
+    new Label("Midsummer"),
+    new Label("Allhallows"),
+    new Label("Boxing Day")
+)
+
+val weekEvents = new Pane
+
+val weekBannerEvents = new Pane {
+    background = Background.fill(Color.BlanchedAlmond)
+    prefWidth = rootWidth * 0.75 - 35
+    minHeight = 34
+}
+
+val dayEvents = new Pane
+
+val dayBannerEvents = new Pane
 
 var singleDayLabel = new Label {
     val day = calendar1.getCurrentDay.getLdt
@@ -44,6 +84,11 @@ def sep1 = new Separator {
     layoutY = 25
     layoutX = 47
 }
+def sep2 = new Separator {
+    prefWidth = rootWidth * 0.75 - 47
+    layoutY = 50
+    layoutX = 47
+}
 def showPop = 
     new Button("Add" + "\n" + "event") {
         layoutX = 2
@@ -51,11 +96,22 @@ def showPop =
         prefWidth = 43
         prefHeight = 45
         onAction = () =>
-            if !popupOpen then
+            if !popupOpen then 
                 val newPopup = WindowGenerator.genNewPopup()
                 newPopup.show()
                 popupOpen = true
     }
+
+val scrollPaneWeekBanner = new ScrollPane {
+    content = weekBannerEvents
+    hbarPolicy = ScrollBarPolicy.Never
+    background = Background.fill(Color.BlanchedAlmond)
+    hmin = 1
+    layoutX = 47
+    layoutY = 50
+    prefWidth = rootWidth * 0.75 - 35
+    prefHeight = 30
+}
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
         val date = calendar1.getCurrentWeek.getInterval.start.plusDays(c)
@@ -72,12 +128,15 @@ val bannerBoxWeek = new Pane {
                 }
         children += new Separator {
             orientation_=(Orientation.Vertical)
-            prefHeight_=(50)
+            prefHeight_=(100)
             layoutX = 46 + c * 130
         }
-    prefHeight_=(50)
+    prefHeight_=(124)
+    maxHeight = 150
     children += showPop
     children += sep1
+    children += sep2
+    children += scrollPaneWeekBanner
     // background = Background.fill(Color.LightGreen)
 }
 val bannerBoxDay = new Pane {
@@ -88,15 +147,13 @@ val bannerBoxDay = new Pane {
         prefWidth_=(rootWidth * 0.75 - 45)
         children += singleDayLabel
     }
-    prefHeight_=(50)
+    prefHeight_=(100)
+    maxHeight = 150
     children += showPop
     children += sep1
+    children += sep2
     // background = Background.fill(Color.LightGreen)
 }
-
-val weekEvents = new Pane
-
-val dayEvents = new Pane
 
 def gridView = new Pane { 
     for c <- 0 to 23 do
@@ -162,11 +219,12 @@ val oneWeek = new Pane {
 }
 
 val scrollPaneDaily = new ScrollPane {
-    maxHeight_=(560)
+    maxHeight = 560
     content = oneDay
     prefWidth = rootWidth * 0.75 + 10
     vvalue = 0.6
     hbarPolicy = ScrollBarPolicy.Never
+    hmin = 1
 }
 val scrollPaneWeekly = new ScrollPane {
     maxHeight = 560
@@ -174,4 +232,5 @@ val scrollPaneWeekly = new ScrollPane {
     content = oneWeek
     vvalue_=(0.6)
     hbarPolicy = ScrollBarPolicy.Never
+    hmin = 1
 }

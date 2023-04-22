@@ -29,6 +29,11 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
     // checks whether two intervals intersect each other
     def intersects(interval: Interval): Boolean = 
         this.contains(interval) || interval.contains(this) || this.overlaps(interval) || interval.overlaps(this)
+
+    // checks whether the event is 
+    def sameDay = 
+        start.getDayOfYear() == `end`.getDayOfYear() || `end`.getHour() == 0 && `end`.getMinute() == 0 && this.lengthInHours < 24
+
     
     override def toString(): String = this.start.toString() +  ";" + this.end.toString()
 

@@ -23,15 +23,16 @@ object CreateEventPane:
         val eventTime = c.getInterval
         
         new Pane {
-            if sameDay(eventTime) then 
+            if eventTime.sameDay then 
                 prefHeight_=(eventTime.lengthInMinutes / 15 * 8.75)
                 prefWidth = 125
                 layoutY_=(30 + eventTime.start.getHour() * 35 + (eventTime.start.getMinute()/15) * 8.75)
+                layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             else
                 prefHeight_=(20)
                 prefWidth = eventTime.lengthInDays * 130 - 5
                 layoutY_=(3)
-            layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
+                layoutX_=((eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
             children += new Label {
                 text = if sameDay(eventTime) && eventTime.lengthInMinutes >= 60 then
@@ -56,7 +57,7 @@ object CreateEventPane:
                 val startDate = s"${eventTime.start.getDayOfMonth()}.${eventTime.start.getMonthValue()}. "
                 val endDate = s"${eventTime.end.getDayOfMonth()}.${eventTime.end.getMonthValue()}. "
                 eventToolTip.text = 
-                    s"${c.getName}\n${if !sameDay(eventTime) then startDate else ""}${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()} - ${if !sameDay(eventTime) then endDate else ""}${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}\n${info}\n${tags}".trim()
+                    s"${c.getName}\n${if !sameDay(eventTime) then startDate else ""}${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()} - ${if !sameDay(eventTime) then endDate else ""}${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}${if info.nonEmpty then  "\n" + info else ""}${if tags.nonEmpty then "\n" + tags else ""}".trim()
                 eventToolTip.show(this, e.getScreenX(), e.getScreenY() + 10)
             }
             onMouseExited = (e: MouseEvent) => {
@@ -76,6 +77,10 @@ object CreateEventPane:
 
     def freshDailyPane(c: Event): Pane = 
         val eventTime = c.getInterval
+        val startDate = s"${eventTime.start.getDayOfMonth()}.${eventTime.start.getMonthValue()}. "
+        val endDate = s"${eventTime.end.getDayOfMonth()}.${eventTime.end.getMonthValue()}. "
+        val info = if c.getInfo != "!empty!" then c.getInfo else ""
+        val tags = if c.getTags != "!empty!" then c.getTags else ""
         
         new Pane {
             if sameDay(eventTime) then 
@@ -92,7 +97,7 @@ object CreateEventPane:
                 text = if sameDay(eventTime) && eventTime.lengthInMinutes >= 60 then
                             c.getName + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.end.getMinute())
                         else if !sameDay(eventTime) || (sameDay(eventTime) && eventTime.lengthInMinutes >= 30) then
-                            c.getName + " " + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.end.getMinute())
+                            s"${c.getName} ${if !sameDay(eventTime) then startDate else ""}${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()} - ${if !sameDay(eventTime) then endDate else ""}${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}".trim()
                         else
                             ""
                 font = new Font(13)
@@ -102,10 +107,6 @@ object CreateEventPane:
             
             onMouseEntered = (e: MouseEvent) => {
                 clickToEdit = true
-                val info = if c.getInfo != "!empty!" then c.getInfo else ""
-                val tags = if c.getTags != "!empty!" then c.getTags else ""
-                val startDate = s"${eventTime.start.getDayOfMonth()}.${eventTime.start.getMonthValue()}. "
-                val endDate = s"${eventTime.end.getDayOfMonth()}.${eventTime.end.getMonthValue()}. "
                 eventToolTip.text = 
                     s"${c.getName}\n${if !sameDay(eventTime) then startDate else ""}${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()} - ${if !sameDay(eventTime) then endDate else ""}${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}\n${info}\n${tags}".trim()
                 eventToolTip.show(this, e.getScreenX(), e.getScreenY() + 10)
@@ -125,14 +126,20 @@ object CreateEventPane:
         }
     end freshDailyPane
 
-    def initializeWeek(events: Buffer[Event]) = 
-        for i <- events yield
-            freshWeeklyPane(i)
+    def initializeWeek(events: Buffer[Event]): Unit = 
+        for i <- events do
+            if i.getInterval.sameDay then 
+                weekEvents.children += freshWeeklyPane(i)
+            else
+                weekBannerEvents.children += freshWeeklyPane(i)
     end initializeWeek
 
-    def initializeDay(events: Buffer[Event]) =
-        for i <- events yield
-            freshDailyPane(i)
+    def initializeDay(events: Buffer[Event]): Unit =
+        for i <- events do
+            if i.getInterval.sameDay then 
+                dayEvents.children += freshDailyPane(i)
+            else
+                dayBannerEvents.children += freshDailyPane(i)
     end initializeDay
 
     def addOneWeeklyPane(event: Event) =
