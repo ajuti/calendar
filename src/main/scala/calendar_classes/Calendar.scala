@@ -29,6 +29,8 @@ class Calendar:
 
   def getAllEvents: Buffer[Event] = this.events
 
+  def getYearOfTheWeek = this.currentWeek.getInterval.start.getYear()
+
   // Sets new Day and Week objects to the mutable variables keeping track of said values
   def setDayAndWeek(date: LocalDateTime) = 
     val gen = new DateAndWeekGen()

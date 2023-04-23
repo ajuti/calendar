@@ -9,7 +9,7 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
        
     // checks if this Interval contains given date
     def contains(date: LocalDateTime): Boolean =
-        start.toLocalDate().equals(date.toLocalDate()) || (start.toLocalDate().isBefore(date.toLocalDate()) && date.toLocalDate().isBefore(end.toLocalDate()))
+        start.toLocalDate().equals(date.toLocalDate()) || (start.toLocalDate().isBefore(date.toLocalDate()) && date.toLocalDate().isBefore(end.toLocalDate())) || end.toLocalDate().equals(date.toLocalDate())
     end contains
 
     // checks if this Interval contains a whole another interval

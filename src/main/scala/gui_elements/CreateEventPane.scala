@@ -29,6 +29,13 @@ object CreateEventPane:
                 layoutY_=(30 + eventTime.start.getHour() * 35 + (eventTime.start.getMinute()/15) * 8.75)
                 layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             else
+                // jos ei samalla viikolla
+                    // jos eventin alku on tällä viikolla (currentWeek) niin:
+                        // width = viikon pituinen
+                        // layoutX = laske samalla lailla kuin lasket normaalisti
+                    // jos eventin loppu on tällä viikolla (currentWeek) niin:
+                        // width = viikon pituinen
+                        // layoutX = laske endtime X-koordinaatti ja vähennä siitä eventin pituus
                 prefHeight_=(20)
                 prefWidth = eventTime.lengthInDays * 130 - 5
                 layoutY_=(3)

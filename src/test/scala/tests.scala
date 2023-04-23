@@ -7,6 +7,7 @@ import scalafx.scene.paint.Color
 import scala.collection.mutable.Buffer
 import java.util.regex.Matcher
 import com.github.tototoshi.csv._
+import gui_elements.calculateEasterDate
 
 class EventTest extends AnyFlatSpec, Matchers:
   val startingTime = LocalDateTime.of(2023, 3, 27, 10, 0)
@@ -170,4 +171,11 @@ class WriterTest extends AnyFlatSpec, Matchers:
     val events = Buffer[Event](Event("xdd", Interval(LocalDateTime.now().minusHours(2).withMinute(0).withSecond(0), LocalDateTime.now().plusHours(1).withMinute(0).withSecond(0)), extraInfo = "moro"), Event("aintnoway", Interval(LocalDateTime.now().withMinute(0).withSecond(0), LocalDateTime.now().plusDays(2).plusHours(2).withMinute(0).withSecond(0)), bannerColor = Some(Color.BLACK)))
     events.foreach(calendar.addEvent(_))
     calendar.upload()
+  }
+
+class EasterTest extends AnyFlatSpec, Matchers:
+  "method" should "return correct date for easter when given a year number as parameter" in {
+    val years = List(2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025)
+
+    years.foreach(x => println(calculateEasterDate(x)))
   }

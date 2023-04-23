@@ -20,6 +20,7 @@ import gui_elements.WindowGenerator.genNewPopupFromClick
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import gui_elements.MainGUI.popupOpen
 import gui_elements.WindowGenerator
+import java.time._
 
 var clickToEdit = false
 
@@ -29,40 +30,93 @@ var eventToolTip = new Tooltip {
 
 val allDayLabels = Buffer[Label]()
 
-def getGoldenNum(year: Int) =
-    (year % 19) + 1
-end getGoldenNum
+def getEasterDate = 
+    val date = calculateEasterDate(calendar1.getCurrentWeek.getYearNum)
+    LocalDateTime.of(calendar1.getCurrentWeek.getYearNum, date._2, date._1, 0, 0)
+end getEasterDate
 
-val goldenDates = Map[Int, (Int, Int)](
-    0 -> (27, 3),
-    1 -> (14, 4),
-    2 -> (3, 4),
-    3 -> (23, 3),
-    
+def getGoodFridayDate = getEasterDate.minusDays(2)
+
+def getEasterMondayDate = getEasterDate.plusDays(1)
+
+def getAscensionDate = getEasterDate.plusDays(39)
+
+def getWhitSundayDate = getAscensionDate.plusDays(10)
+
+def getMidsummerDate: LocalDateTime = 
+    var midsummer = LocalDateTime.of(calendar1.getCurrentWeek.getYearNum, 6, 20, 0, 0)
+    for i <- 1 to 6 do
+        if midsummer.getDayOfWeek() != DayOfWeek.SATURDAY then
+            midsummer = midsummer.plusDays(1)
+    midsummer
+
+def getAllhallowsDate = 
+    var allhallows = LocalDateTime.of(calendar1.getCurrentWeek.getYearNum, 10, 31, 0, 0)
+    for i <- 1 to 6 do
+        if allhallows.getDayOfWeek() != DayOfWeek.SATURDAY then
+            allhallows = allhallows.plusDays(1)
+    allhallows
+
+def holidayDates: Map[LocalDateTime, String] = 
+    val year = calendar1.getCurrentWeek.getYearNum
+    Map[LocalDateTime, String](
+    LocalDateTime.of(year, 1, 1, 0, 0)      -> "New Years Day",
+    LocalDateTime.of(year + 1, 1, 1, 0, 0)  -> "New Years Day",
+    LocalDateTime.of(year - 1, 1, 1, 0, 0)  -> "New Years Day", //xdd, this is very bubblegum, will fix later (maybe)
+    LocalDateTime.of(year, 12, 25, 0, 0)    -> "Christmas Day",
+    getEasterDate                           -> "Easter Sunday",
+    getEasterMondayDate                     -> "Easter Monday",
+    getGoodFridayDate                       -> "Good Friday",
+    getAscensionDate                        -> "Ascension Day",
+    getWhitSundayDate                       -> "Whit Sunday",
+    getMidsummerDate                        -> "Midsummer",
+    getAllhallowsDate                       -> "Allhallows",
+    LocalDateTime.of(year, 12, 26, 0, 0)    -> "Boxing Day",
+    LocalDateTime.of(year, 1, 6, 0, 0)      -> "Epiphany",
+    LocalDateTime.of(year, 5, 1, 0, 0)      -> "May Day",
+    LocalDateTime.of(year, 12, 6, 0, 0)     -> "Independence Day",
+    LocalDateTime.of(year, 12, 24, 0, 0)    -> "Christmas Eve",
+    LocalDateTime.of(year, 2, 14, 0, 0)     -> "Valentines Day",
+    LocalDateTime.of(year, 12, 31, 0, 0)    -> "New Years Eve"
 )
 
-val holidayDates = Map[(Int, Int), String](
-    (1, 1)      -> "New Years Day",
-    (25, 12)    -> "Christmas Day",
-)
+var currentHolidayDates = holidayDates
 
-val allHolidayLabels = Buffer[Label](
-    new Label("New Years Day"),
-    new Label("Christmas Day"),
-    new Label("Good Friday"),
-    new Label("Easter Sunday"),
-    new Label("Easter Monday"),
-    new Label("Ascension Day"),
-    new Label("Whit Sunday"),
-    new Label("Midsummer"),
-    new Label("Allhallows"),
-    new Label("Boxing Day")
-)
+// labels to be used in holiday pane
+val holidayLabels = Buffer[Label]()
+
+val holidayPane = new Pane {
+    children = holidayLabels
+    layoutX = 47
+    layoutY = 25
+}
+
+def getHolidayLabels = 
+    val dates = currentHolidayDates.keySet.filter(calendar1.getCurrentWeek.getInterval.contains(_))
+    if dates.nonEmpty then
+        for i <- dates do
+            holidayLabels += new Label {
+                text = currentHolidayDates.apply(i)
+                layoutX = 8 + ((i.getDayOfWeek().getValue()- 1) * 130)
+                layoutY = 4
+                maxWidth = 130
+                font = new Font(13)
+            }
+end getHolidayLabels
+
+def updateHolidayLabels(year: Int) = 
+    if year != calendar1.getYearOfTheWeek then
+        currentHolidayDates = holidayDates
+    holidayLabels.clear()
+    getHolidayLabels
+    holidayPane.children = holidayLabels
+end updateHolidayLabels
+
 
 val weekEvents = new Pane
 
 val weekBannerEvents = new Pane {
-    background = Background.fill(Color.BlanchedAlmond)
+    background = Background.fill(Color.White)
     prefWidth = rootWidth * 0.75 - 35
     minHeight = 34
 }
@@ -105,13 +159,15 @@ def showPop =
 val scrollPaneWeekBanner = new ScrollPane {
     content = weekBannerEvents
     hbarPolicy = ScrollBarPolicy.Never
-    background = Background.fill(Color.BlanchedAlmond)
+    background = Background.fill(Color.White)
     hmin = 1
     layoutX = 47
     layoutY = 50
     prefWidth = rootWidth * 0.75 - 35
     prefHeight = 30
+    border = Border.stroke(Color.BLACK)
 }
+
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
         val date = calendar1.getCurrentWeek.getInterval.start.plusDays(c)
@@ -137,6 +193,7 @@ val bannerBoxWeek = new Pane {
     children += sep1
     children += sep2
     children += scrollPaneWeekBanner
+    children += holidayPane
     // background = Background.fill(Color.LightGreen)
 }
 val bannerBoxDay = new Pane {
@@ -205,17 +262,6 @@ val oneWeek = new Pane {
             clickedPopup.show()
             popupOpen = true
             
-
-
-    //onMouseDragged = (e:MouseEvent) => println(e.x + " " + e.y)
-    //onMouseDragOver = (e:MouseDragEvent) => println(e.x + " " + e.y)
-        /*children += new Rectangle {
-            prefHeight_=(abs(e.y - e.sceneY))
-            prefWidth_=(abs(e.x - e.sceneX))
-            fill_=(Color.Black)
-            layoutX_=(e.sceneX)
-            layoutY_=(e.sceneY)
-        }*/
 }
 
 val scrollPaneDaily = new ScrollPane {
