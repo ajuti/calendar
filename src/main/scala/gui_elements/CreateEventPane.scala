@@ -94,11 +94,12 @@ object CreateEventPane:
                 prefHeight_=(eventTime.lengthInMinutes / 15 * 8.75)
                 prefWidth = rootWidth * 0.74 - 60
                 layoutY_=(30 + eventTime.start.getHour() * 35 + (eventTime.start.getMinute()/15) * 8.75)
+                layoutX = 50
             else
                 prefHeight_=(20)
-                prefWidth = rootWidth * 0.74 - 60
+                prefWidth = rootWidth * 0.74 - 5
                 layoutY_=(3)
-            layoutX_=(50)
+                layoutX_=(5)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
             children += new Label {
                 text = if sameDay(eventTime) && eventTime.lengthInMinutes >= 60 then

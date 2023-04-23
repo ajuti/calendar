@@ -83,10 +83,17 @@ def holidayDates: Map[LocalDateTime, String] =
 var currentHolidayDates = holidayDates
 
 // labels to be used in holiday pane
-val holidayLabels = Buffer[Label]()
+val holidayLabelsWeek = Buffer[Label]()
 
-val holidayPane = new Pane {
-    children = holidayLabels
+val holidayLabelsDay = Buffer[Label]()
+
+val holidayPaneWeek = new Pane {
+    children = holidayLabelsWeek
+    layoutX = 47
+    layoutY = 25
+}
+val holidayPaneDay = new Pane {
+    children = holidayLabelsDay
     layoutX = 47
     layoutY = 25
 }
@@ -95,21 +102,31 @@ def getHolidayLabels =
     val dates = currentHolidayDates.keySet.filter(calendar1.getCurrentWeek.getInterval.contains(_))
     if dates.nonEmpty then
         for i <- dates do
-            holidayLabels += new Label {
+            holidayLabelsWeek += new Label {
                 text = currentHolidayDates.apply(i)
                 layoutX = 8 + ((i.getDayOfWeek().getValue()- 1) * 130)
                 layoutY = 4
                 maxWidth = 130
                 font = new Font(13)
             }
+            if calendar1.getCurrentDate.toLocalDate().isEqual(i.toLocalDate()) then
+                holidayLabelsDay += new Label {
+                    text = currentHolidayDates.apply(i)
+                    layoutX = 410
+                    layoutY = 4
+                    maxWidth = 130
+                    font = new Font(13)
+                }
 end getHolidayLabels
 
 def updateHolidayLabels(year: Int) = 
     if year != calendar1.getYearOfTheWeek then
         currentHolidayDates = holidayDates
-    holidayLabels.clear()
+    holidayLabelsWeek.clear()
+    holidayLabelsDay.clear()
     getHolidayLabels
-    holidayPane.children = holidayLabels
+    holidayPaneWeek.children = holidayLabelsWeek
+    holidayPaneDay.children = holidayLabelsDay
 end updateHolidayLabels
 
 
@@ -123,7 +140,11 @@ val weekBannerEvents = new Pane {
 
 val dayEvents = new Pane
 
-val dayBannerEvents = new Pane
+val dayBannerEvents = new Pane {
+    background = Background.fill(Color.White)
+    prefWidth = rootWidth * 0.75 - 35
+    minHeight = 34
+}
 
 var singleDayLabel = new Label {
     val day = calendar1.getCurrentDay.getLdt
@@ -167,7 +188,17 @@ val scrollPaneWeekBanner = new ScrollPane {
     prefHeight = 30
     border = Border.stroke(Color.BLACK)
 }
-
+val scrollPaneDayBanner = new ScrollPane {
+    content = dayBannerEvents
+    hbarPolicy = ScrollBarPolicy.Never
+    background = Background.fill(Color.White)
+    hmin = 1
+    layoutX = 47
+    layoutY = 50
+    prefWidth = rootWidth * 0.75 - 35
+    prefHeight = 30
+    border = Border.stroke(Color.BLACK)
+}
 val bannerBoxWeek = new Pane {
     for c <- 0 to 6 do
         val date = calendar1.getCurrentWeek.getInterval.start.plusDays(c)
@@ -193,7 +224,7 @@ val bannerBoxWeek = new Pane {
     children += sep1
     children += sep2
     children += scrollPaneWeekBanner
-    children += holidayPane
+    children += holidayPaneWeek
     // background = Background.fill(Color.LightGreen)
 }
 val bannerBoxDay = new Pane {
@@ -204,11 +235,13 @@ val bannerBoxDay = new Pane {
         prefWidth_=(rootWidth * 0.75 - 45)
         children += singleDayLabel
     }
-    prefHeight_=(100)
+    prefHeight_=(124)
     maxHeight = 150
     children += showPop
     children += sep1
     children += sep2
+    children += scrollPaneDayBanner
+    children += holidayPaneDay
     // background = Background.fill(Color.LightGreen)
 }
 
@@ -247,6 +280,7 @@ val oneWeek = new Pane {
     prefHeight = 870
     prefWidth = rootWidth * 0.75
     children += gridView
+    children += dayBannerEvents
     for c <- 0 to 6 do
         children += new Separator {
             orientation_=(Orientation.Vertical)
