@@ -21,6 +21,9 @@ import scalafx.event.ActionEvent
 import scalafx.collections.ObservableBuffer.Add
 import scalafx.collections.ObservableBuffer.Remove
 import scalafx.application.JFXApp3.PrimaryStage
+import scalafx.scene.input.MouseEvent
+import scalafx.scene.shape.Rectangle
+import scala.math._
 
 
 
@@ -45,7 +48,38 @@ object MainGUI extends JFXApp3:
 
                     background = Background.fill(Color.Crimson)
                     //border_=(Border.stroke(Color.DarkOrange))
-                    children = List(searchRootPane) 
+                    children = List(searchRootPane)
+                    
+                    
+                    // FOR TESTING //
+                    var rectStart = (0.0, 0.0)
+                    val testPaneForPane = new Pane {
+                        prefHeight = 400
+                        prefWidth = 250
+                        border = Border.stroke(Color.Black)
+                    }
+                    val testRectangle = new Pane {
+                        prefHeight = 0.0
+                        prefWidth = 100
+                        opacity = 0.5
+                        background = Background.fill(Color.Blue)
+                    }
+                    testPaneForPane.children += testRectangle
+                    children += testPaneForPane
+
+                    testPaneForPane.onMousePressed = (e: MouseEvent) =>
+                        println("onMousePressed: " + e.y)
+                        testRectangle.layoutX = e.x
+                        testRectangle.layoutY = e.y
+
+                        rectStart = (e.x, e.y)
+                    testPaneForPane.onMouseReleased = (e: MouseEvent) =>
+                        println("onMouseReleased: " + e.y)
+                        testRectangle.prefHeight = (0.0)
+
+                    testPaneForPane.onMouseDragged = (e: MouseEvent) =>
+                        testRectangle.prefHeight = (abs(e.y - rectStart._2))
+
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75 + 12)

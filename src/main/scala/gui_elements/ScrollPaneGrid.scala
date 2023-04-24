@@ -291,6 +291,7 @@ val oneWeek = new Pane {
     background_=(Background.fill(Color.White))
 
     onMouseClicked = (e:MouseEvent) => 
+        println(e.x + " " + e.y)
         if !popupOpen && !clickToEdit && e.y > 30 then
             val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
             clickedPopup.show()
