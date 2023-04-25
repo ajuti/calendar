@@ -19,6 +19,9 @@ import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.input.KeyEvent
 import scalafx.scene.input.KeyCode
 import java.time.format.DateTimeFormatter
+import gui_elements.WindowGenerator._
+import gui_elements.MainGUI._
+import scalafx.scene.input.MouseEvent
 
 def searchEventPanes(input: String) = 
     val foundEvents = MainGUI.calendar1.searchEvents(input)
@@ -36,7 +39,14 @@ def searchEventPanes(input: String) =
                 prefWidth = rootWidth * 0.24
                 prefHeight = 75
                 background = Background.fill(i.getColor.getOrElse(Color.BlanchedAlmond))
-                // ONCLICK
+                
+                onMouseClicked = (e: MouseEvent) => {
+                if !popupOpen then
+                    val editWindow = genNewPopupForEditing(i)
+                    editWindow.show()
+                    popupOpen = true
+
+                }
             }
         }
 

@@ -16,6 +16,7 @@ import scalafx.scene.input.MouseEvent
 import gui_elements.WindowGenerator.genNewPopupForEditing
 import gui_elements.MainGUI.popupOpen
 import gui_elements.WindowGenerator
+import gui_elements.MainGUI.calendar1
 
 object CreateEventPane:
 
@@ -29,19 +30,24 @@ object CreateEventPane:
                 layoutY_=(30 + eventTime.start.getHour() * 35 + (eventTime.start.getMinute()/15) * 8.75)
                 layoutX_=(47 + (eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             else
-                // jos ei samalla viikolla
-                    // jos eventin alku on tällä viikolla (currentWeek) niin:
-                        // width = viikon pituinen
-                        // layoutX = laske samalla lailla kuin lasket normaalisti
-                    // jos eventin loppu on tällä viikolla (currentWeek) niin:
-                        // width = viikon pituinen
-                        // layoutX = laske endtime X-koordinaatti ja vähennä siitä eventin pituus
+                if !eventTime.sameWeek then
+                    if calendar1.getCurrentWeek.getInterval.contains(eventTime.start) then
+                        prefWidth = 130 * 7 - 5
+                        layoutX_=((eventTime.start.getDayOfWeek().getValue() - 1) * 130) 
+                    else if calendar1.getCurrentWeek.getInterval.contains(eventTime.`end`) then
+                        prefWidth = 47 + (eventTime.`end`.getDayOfWeek().getValue() - 1) * 130
+                        layoutX = 0
+                    else
+                        prefWidth = 130 * 7 - 5
+                        layoutX = 0
+                else       
+                    prefWidth = eventTime.lengthInDays * 130 - 5
+                    layoutX_=((eventTime.start.getDayOfWeek().getValue() - 1) * 130)
                 prefHeight_=(20)
-                prefWidth = eventTime.lengthInDays * 130 - 5
                 layoutY_=(3)
-                layoutX_=((eventTime.start.getDayOfWeek().getValue() - 1) * 130)
             background = Background.fill(c.getColor.getOrElse(Color.BlanchedAlmond))
-            children += new Label {
+            children += new Text {
+                // stylesheets += getClass().getResource("outline.css").toExternalForm()
                 text = if sameDay(eventTime) && eventTime.lengthInMinutes >= 60 then
                             if c.getName.length() > 15 then 
                                 (c.getName.substring(0, 15) + "...") + "\n" + eventTime.start.getHour() + ":" + (if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()) + " - " + eventTime.`end`.getHour() + ":" + (if eventTime.end.getMinute() == 0 then "00" else eventTime.`end`.getMinute())
@@ -51,9 +57,12 @@ object CreateEventPane:
                             c.getName
                         else
                             ""
-                maxWidth = 120
+                fill = Color.Black
+                //stroke = Color.White
+                //strokeWidth = 0.3
                 font = new Font(13)
                 layoutX = 3
+                layoutY = 15
             }
             border_=(Border.stroke(Color.Black))
             
@@ -108,7 +117,7 @@ object CreateEventPane:
                             s"${c.getName} ${if !sameDay(eventTime) then startDate else ""}${eventTime.start.getHour()}:${if eventTime.start.getMinute() == 0 then "00" else eventTime.start.getMinute()} - ${if !sameDay(eventTime) then endDate else ""}${eventTime.end.getHour()}:${if eventTime.`end`.getMinute() == 0 then "00" else eventTime.`end`.getMinute()}".trim()
                         else
                             ""
-                font = new Font(13)
+                // font = new Font(13)
                 layoutX = 3
             }
             border_=(Border.stroke(Color.Black))

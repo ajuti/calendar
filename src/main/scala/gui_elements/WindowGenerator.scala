@@ -375,6 +375,7 @@ object WindowGenerator:
                         errorLabelName.visible = false
                         errorLabelTags.visible = false
                         tempPaneWeek.prefHeight = 0.0
+                        tempPaneDay.prefHeight = 0.0
                         try
                             val eventName = nameTxtField.text.getValue
                             if eventName == "" then throw EmptyNameException("Name field was empty")
@@ -419,6 +420,7 @@ object WindowGenerator:
                     layoutY = 360
                     onAction = () =>
                         tempPaneWeek.prefHeight = 0.0
+                        tempPaneDay.prefHeight = 0.0
                         close()
                         popupOpen = false
                 }
@@ -515,6 +517,8 @@ object WindowGenerator:
             }
             onCloseRequest = () => 
                 popupOpen = false
+                tempPaneDay.prefHeight = 0.0
+                tempPaneWeek.prefHeight = 0.0
             resizable_=(false)
         }
         addEventPopup

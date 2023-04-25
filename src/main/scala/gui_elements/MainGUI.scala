@@ -24,11 +24,9 @@ import scalafx.scene.shape.Rectangle
 import scala.math._
 
 
-
-
 object MainGUI extends JFXApp3:
     val calendar1 = new Calendar 
-    var popupOpen = false
+    var popupOpen = false  
     var primaryStage = new PrimaryStage
     def start(): Unit = 
 
@@ -39,7 +37,7 @@ object MainGUI extends JFXApp3:
             val rootWidth = 1280
             val rootHeigth = 720
             scene = new Scene(rootWidth + 12, rootHeigth + 12) {
-                stylesheets += getClass().getResource("styles.css").toExternalForm()
+                // stylesheets += getClass().getResource("styles.css").toExternalForm()
                 val leftPane = new VBox {
                     prefWidth_=(rootWidth*0.25)
                     prefHeight_=(rootHeigth)

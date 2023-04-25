@@ -3,6 +3,7 @@ package calendar_classes
 import java.time.LocalDateTime
 import java.time.temporal.TemporalUnit
 import java.time.temporal.ChronoUnit
+import calendar_classes.service.GetWeek.getWeek2
 
 // Class structure is mostly pulled from earlier O1-course exercise and refactored to use LocalDateTimes instead of Moments like in the original
 class Interval(val start: LocalDateTime, val end: LocalDateTime):  
@@ -34,7 +35,9 @@ class Interval(val start: LocalDateTime, val end: LocalDateTime):
     def sameDay = 
         start.getDayOfYear() == `end`.getDayOfYear() || `end`.getHour() == 0 && `end`.getMinute() == 0 && this.lengthInHours < 24
 
-    
+    def sameWeek = 
+        getWeek2(start) == getWeek2(`end`) || (getWeek2(start) == (getWeek2(`end`) - 1) && `end`.getHour() == 0 && end.getMinute() == 0)
+
     override def toString(): String = this.start.toString() +  ";" + this.end.toString()
 
 end Interval
