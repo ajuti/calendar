@@ -62,11 +62,33 @@ object WindowGenerator:
             "45"
     end setStartMinsFromNull
 
+    def genNewPopupFromDrag(start: (Double, Double), end: (Double, Double), addingDay: Boolean = false, shift15: Boolean = false) =
+        val week = calendar1.getCurrentWeek.getInterval
+        val day = calendar1.getCurrentDay.getInterval
+        val startForDay = day.start.withHour(((start._2 - 30) / 35).floor.toInt).withMinute(((start._2 - 30) % 35 / 8.75).floor.toInt * 15)
+        val startForWeek = week.start.plusDays(((start._1 - 47) / 130).toLong).withHour(((start._2 - 30) / 35).floor.toInt).withMinute(((start._2 - 30) % 35 / 8.75).floor.toInt * 15)
+                
+        try
+            val endForDay = day.start.withHour(((end._2 - 30) / 35).floor.toInt).withMinute(((end._2 - 30) % 35 / 8.75).floor.toInt * 15).plusMinutes(if shift15 then 15 else 0)
+            val endForWeek = week.start.plusDays(((start._1 - 47) / 130).toLong).withHour(((end._2 - 30) / 35).floor.toInt).withMinute(((end._2 - 30) % 35 / 8.75).floor.toInt * 15).plusMinutes(if shift15 then 15 else 0)   
+            if addingDay then
+                genNewPopup(startForDay, endForDay, isDragging = true)
+            else    
+                genNewPopup(startForWeek, endForWeek, isDragging = true)
+        catch
+            case e: DateTimeException => 
+                if addingDay then
+                    genNewPopup(startForDay, startForDay.plusDays(1).withHour(0).withMinute(0), isDragging = true)
+                else    
+                    genNewPopup(startForWeek, startForWeek.plusDays(1).withHour(0).withMinute(0), isDragging = true)
+
+    end genNewPopupFromDrag
+
     def genNewPopupForEditing(event: Event) = 
-        genNewPopup(event.getInterval.start, true, Some(event))
+        genNewPopup(event.getInterval.start, editing = true, event = Some(event))
     end genNewPopupForEditing
 
-    def genNewPopupFromClick(x: Double, y: Double, addingDay: Boolean = false) =     
+    def genNewPopupFromClick(x: Double, y: Double, addingDay: Boolean = false) =   
         val week = calendar1.getCurrentWeek.getInterval
         val day = calendar1.getCurrentDay.getInterval
         if addingDay then
@@ -89,7 +111,7 @@ object WindowGenerator:
         for i <- dayBannerEvents.children.indices do
             dayBannerEvents.children(i).layoutY = 2 + i * 20
 
-    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None): Stage =
+    def genNewPopup(initDate: LocalDateTime = LocalDateTime.now(), initEnd: LocalDateTime = LocalDateTime.now(), editing: Boolean = false, event: Option[Event] = None, isDragging: Boolean = false): Stage =
         val addEventPopup = new Stage {
             width_=(270)
             height_=(430)
@@ -352,6 +374,7 @@ object WindowGenerator:
                         errorLabelTime.visible = false
                         errorLabelName.visible = false
                         errorLabelTags.visible = false
+                        tempPaneWeek.prefHeight = 0.0
                         try
                             val eventName = nameTxtField.text.getValue
                             if eventName == "" then throw EmptyNameException("Name field was empty")
@@ -395,6 +418,7 @@ object WindowGenerator:
                         if editing then 127 else 150
                     layoutY = 360
                     onAction = () =>
+                        tempPaneWeek.prefHeight = 0.0
                         close()
                         popupOpen = false
                 }
@@ -481,6 +505,11 @@ object WindowGenerator:
                             endTimeCBoxHours.value = endTimeCBoxHours.items.get().drop(1).headOption.getOrElse("23")
                         else
                             endTimeCBoxHours.value = endTimeCBoxHours.items.get().headOption.getOrElse("23")
+                    if isDragging then
+                        endTimeCBoxHours.value = if initEnd.getHour() >= 10 then initEnd.getHour().toString() else s"0${initEnd.getHour()}"
+                        endTimeCBoxMinutes.value = if initEnd.getMinute() >= 10 then setStartMinsFromNull(initEnd) else s"00"
+                        if endTimeCBoxHours.value.get() == "00" then
+                            endTimeDatePicker.value = endTimeDatePicker.getValue().plusDays(1)
                 }
                 root = popupRootPane
             }

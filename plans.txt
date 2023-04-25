@@ -27,3 +27,6 @@ Writing and Reading from CSV:
         - extrainfo: string
         - bannerColor: as Color, can be parsed into 3 integers
     Writing CSV file
+
+Event by Drag:
+add clause that check if mouseDragged is true then the popupWindow wont be created by click, but rather the Drag

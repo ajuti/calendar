@@ -24,6 +24,23 @@ import java.time._
 
 var clickToEdit = false
 
+var dragging = false
+
+var tempPaneStart = (0.0, 0.0)
+
+val tempPaneWeek = new Pane {
+    prefHeight = 0.0
+    prefWidth = 127
+    opacity = 0.9
+    background = Background.fill(Color.BlanchedAlmond)
+}
+val tempPaneDay = new Pane {
+    prefHeight = 0.0
+    prefWidth = rootWidth * 0.74 - 50
+    opacity = 0.9
+    background = Background.fill(Color.BlanchedAlmond)
+}
+
 var eventToolTip = new Tooltip {
     id = "tooltip"
 }
@@ -268,19 +285,38 @@ val oneDay = new Pane {
     prefWidth_=(rootWidth * 0.75)
     children += gridView
     children += dayEvents
+    children += tempPaneDay
     background_=(Background.fill(Color.White))
 
-    onMouseClicked = (e:MouseEvent) => 
-        if !popupOpen && !clickToEdit && e.y > 30 then
-            val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y, true)
+    onMouseDragged = (e: MouseEvent) =>
+        dragging = true
+        tempPaneDay.prefHeight = scala.math.max(e.y - tempPaneStart._2, 0)
+    
+    onMousePressed = (e: MouseEvent) =>
+        tempPaneDay.layoutX = 47
+        tempPaneDay.layoutY = e.y
+        tempPaneStart = (e.x, e.y)
+    
+    onMouseReleased = (e: MouseEvent) =>
+        if !popupOpen && !clickToEdit && e.y > 30 && tempPaneStart._2 > 30 && e.y >= tempPaneStart._2 then
+            val clickedPopup = 
+                if !dragging then
+                    WindowGenerator.genNewPopupFromClick(e.x, e.y)
+                else
+                    if (e.y - tempPaneStart._2 >= 8.75) then
+                        WindowGenerator.genNewPopupFromDrag(tempPaneStart, (e.x, e.y))
+                    else
+                        WindowGenerator.genNewPopupFromDrag(tempPaneStart, (e.x, e.y), addingDay = true, shift15 = true)
             clickedPopup.show()
             popupOpen = true
+            dragging = false
 }
 val oneWeek = new Pane {
     prefHeight = 870
     prefWidth = rootWidth * 0.75
     children += gridView
     children += dayBannerEvents
+    children += tempPaneWeek
     for c <- 0 to 6 do
         children += new Separator {
             orientation_=(Orientation.Vertical)
@@ -290,12 +326,29 @@ val oneWeek = new Pane {
     children += weekEvents
     background_=(Background.fill(Color.White))
 
-    onMouseClicked = (e:MouseEvent) => 
-        println(e.x + " " + e.y)
-        if !popupOpen && !clickToEdit && e.y > 30 then
-            val clickedPopup = WindowGenerator.genNewPopupFromClick(e.x, e.y)
+    onMouseDragged = (e:MouseEvent) => 
+        dragging = true
+        tempPaneWeek.prefHeight = scala.math.max(e.y - tempPaneStart._2, 0)
+         
+    onMousePressed = (e: MouseEvent) =>
+        tempPaneWeek.layoutX = (e.x / 130).floor * 130 + 47
+        tempPaneWeek.layoutY = e.y
+        tempPaneStart = (e.x, e.y)
+        println("Pressed: " + e.x)
+
+    onMouseReleased = (e: MouseEvent) =>
+        if !popupOpen && !clickToEdit && e.y > 30 && tempPaneStart._2 > 30 && e.y >= tempPaneStart._2 then
+            val clickedPopup = 
+                if !dragging then
+                    WindowGenerator.genNewPopupFromClick(e.x, e.y)
+                else
+                    if (e.y - tempPaneStart._2 >= 8.75) then
+                        WindowGenerator.genNewPopupFromDrag(tempPaneStart, (e.x, e.y))
+                    else
+                        WindowGenerator.genNewPopupFromDrag(tempPaneStart, (e.x, e.y), shift15 = true)
             clickedPopup.show()
             popupOpen = true
+            dragging = false
             
 }
 
