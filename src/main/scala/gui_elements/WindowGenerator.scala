@@ -300,7 +300,7 @@ object WindowGenerator:
                 }
                 val addTags = new Button {
                     text = "+"
-                    prefWidth = 20
+                    prefWidth = 25
                     layoutX = 215
                     layoutY = 173
                     onAction = () =>
@@ -311,6 +311,7 @@ object WindowGenerator:
                         catch
                             case e: EmptyTagFieldException =>
                                 errorLabelTags.visible = true
+                        tagsList.scrollTo(tagsList.items.get().size() - 1)
                 }
                 val tagsList = new ListView(List[String]()) {
                     prefWidth = 140
@@ -411,6 +412,7 @@ object WindowGenerator:
                             case e: NullPointerException => errorLabelTime.visible = true
                             case e: DateTimeParseException => errorLabelTime.visible = true
                             case e: EmptyNameException => errorLabelName.visible = true
+                        calendar1.upload()
 
                 }
                 val cancelEvent = new Button {
@@ -423,6 +425,7 @@ object WindowGenerator:
                         tempPaneDay.prefHeight = 0.0
                         close()
                         popupOpen = false
+                        calendar1.upload()
                 }
                 val deleteEvent = new Button {
                     text = "Delete"
@@ -435,6 +438,7 @@ object WindowGenerator:
                         updatePanes()
                         close()
                         popupOpen = false
+                        calendar1.upload()
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {

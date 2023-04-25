@@ -20,8 +20,9 @@ import scalafx.collections.ObservableBuffer.Add
 import scalafx.collections.ObservableBuffer.Remove
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.shape.Rectangle
 import scala.math._
+import gui_elements.Notification._
+import java.time._
 
 
 object MainGUI extends JFXApp3:
@@ -44,10 +45,8 @@ object MainGUI extends JFXApp3:
 
                     background = Background.fill(Color.Crimson)
                     //border_=(Border.stroke(Color.DarkOrange))
-                    children = List(searchRootPane)
+                    children = List(searchRootPane, scrollCheckBoxes)
                     
-                
-
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75 + 12)
@@ -69,6 +68,7 @@ object MainGUI extends JFXApp3:
             }
         }
         primaryStage = this.stage
+        timeline.play()
             
     
 
