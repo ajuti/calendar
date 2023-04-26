@@ -29,6 +29,8 @@ object WindowGenerator:
 
     case class EmptyNameException(description: String) extends Exception(description)
     case class EmptyTagFieldException(description: String) extends Exception(description)
+    case class FieldTooLongException(description: String) extends Exception(description)
+    case class EndTimeBeforeStartException(description: String) extends Exception(description)
 
     def genHours: ObservableBuffer[String] =
         val obsBuffer = new ObservableBuffer[String]()
@@ -97,15 +99,15 @@ object WindowGenerator:
             genNewPopup(week.start.plusDays(((x - 47) / 130).toLong).withHour(((y - 30) / 35).floor.toInt).withMinute(((y - 30) % 35 / 8.75).floor.toInt * 15))
     end genNewPopupFromClick
 
-    def updatePanes() = 
+    def updatePanes(tags: Buffer[String] = allTags) = 
         calendar1.getCurrentDay.updateEvents()
         calendar1.getCurrentWeek.updateEvents()
         weekEvents.children.clear()
         dayEvents.children.clear()
         weekBannerEvents.children.clear()
         dayBannerEvents.children.clear()
-        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
-        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
+        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents.filter(x => scanTags(x)))
+        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents.filter(x => scanTags(x)))
         for i <- weekBannerEvents.children.indices do
             weekBannerEvents.children(i).layoutY = 2 + i * 20
         for i <- dayBannerEvents.children.indices do
@@ -193,12 +195,22 @@ object WindowGenerator:
                                 initDate.toLocalDate().plusDays(1)
                         )
                     this.valueProperty().onChange(
-                        if this.getValue().isAfter(startTimeDatePicker.getValue()) then
-                            endTimeCBoxHours.items = genHours
-                            endTimeCBoxMinutes.items = genMinutes
-                        else
-                            handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
+                        try 
+                            if this.getValue().isAfter(startTimeDatePicker.getValue()) then
+                                endTimeCBoxHours.items = genHours
+                                endTimeCBoxMinutes.items = genMinutes
+                            else if this.getValue().isEqual(startTimeDatePicker.getValue()) then
+                                handleTimeChange(startTimeCBoxHours.getValue(), startTimeCBoxMinutes.getValue())
+                            else
+                                throw EndTimeBeforeStartException("End date cannot be before start date")
+                        catch
+                            case e: EndTimeBeforeStartException => 
+                                errorLabelTime.text = "End date can't be\nbefore start date"
+                                errorLabelTime.visible = true
+                                this.value = startTimeDatePicker.getValue()
                     )
+                    onMousePressed = () =>
+                        errorLabelTime.visible = false
                 }   
                 val startTimeCBoxHours: ComboBox[String] = new ComboBox[String] {
                     for c <- genHours do
@@ -307,9 +319,14 @@ object WindowGenerator:
                         try 
                             val tags = tagsTxtField.text.value.trim()
                             if tags.isEmpty() then throw EmptyTagFieldException("The text field was empty")
+                            if tags.length() > 10 then throw FieldTooLongException("Tags can't be longer than 10 characters")
                             tagsList.items.get().add(tagsTxtField.text.value.trim())
                         catch
                             case e: EmptyTagFieldException =>
+                                errorLabelTags.text = "can't be empty"
+                                errorLabelTags.visible = true
+                            case e: FieldTooLongException =>
+                                errorLabelTags.text = "max 10 chars"
                                 errorLabelTags.visible = true
                         tagsList.scrollTo(tagsList.items.get().size() - 1)
                 }
@@ -409,10 +426,15 @@ object WindowGenerator:
                             close()
                             popupOpen = false
                         catch
-                            case e: NullPointerException => errorLabelTime.visible = true
-                            case e: DateTimeParseException => errorLabelTime.visible = true
+                            case e: NullPointerException => 
+                                errorLabelTime.text = "Incorrect time"
+                                errorLabelTime.visible = true
+                            case e: DateTimeParseException => 
+                                errorLabelTime.text = "Incorrect time"
+                                errorLabelTime.visible = true
                             case e: EmptyNameException => errorLabelName.visible = true
                         calendar1.upload()
+                        updateCheckBoxes()
 
                 }
                 val cancelEvent = new Button {
@@ -426,6 +448,7 @@ object WindowGenerator:
                         close()
                         popupOpen = false
                         calendar1.upload()
+                        updateCheckBoxes()
                 }
                 val deleteEvent = new Button {
                     text = "Delete"
@@ -439,6 +462,7 @@ object WindowGenerator:
                         close()
                         popupOpen = false
                         calendar1.upload()
+                        updateCheckBoxes()
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {

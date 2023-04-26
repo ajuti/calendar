@@ -30,3 +30,7 @@ Writing and Reading from CSV:
 
 Event by Drag:
 add clause that check if mouseDragged is true then the popupWindow wont be created by click, but rather the Drag
+
+Monthly view: 
+GridPane of buttons
+5 by 7 matrix

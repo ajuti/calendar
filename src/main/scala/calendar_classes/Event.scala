@@ -70,6 +70,8 @@ class Event(private var name: String, private var interval: Interval, stringTags
 
   def getTags = this.tags.keys.mkString(";")
 
+  def getTagsList = getTags.split(';')
+
   def getTagsMap = this.tags
 
   def addInfo(info: String) = this.extraInfo = info

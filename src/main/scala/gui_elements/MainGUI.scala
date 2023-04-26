@@ -31,32 +31,29 @@ object MainGUI extends JFXApp3:
     var primaryStage = new PrimaryStage
     def start(): Unit = 
 
-        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents)
-        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents)
+        CreateEventPane.initializeWeek(calendar1.getCurrentWeek.getEvents.filter(x => scanTags(x)))
+        CreateEventPane.initializeDay(calendar1.getCurrentDay.getEvents.filter(x => scanTags(x)))
         stage = new JFXApp3.PrimaryStage {
             title = "Calendar"
             val rootWidth = 1280
             val rootHeigth = 720
             scene = new Scene(rootWidth + 12, rootHeigth + 12) {
-                // stylesheets += getClass().getResource("styles.css").toExternalForm()
+                
                 val leftPane = new VBox {
                     prefWidth_=(rootWidth*0.25)
                     prefHeight_=(rootHeigth)
 
-                    background = Background.fill(Color.Crimson)
-                    //border_=(Border.stroke(Color.DarkOrange))
-                    children = List(searchRootPane, scrollCheckBoxes)
+                    background = Background.fill(Color.DarkTurquoise)
+                    children = List(paneOfMonthly, searchRootPane, tagsLabel, scrollCheckBoxes)
                     
                 }
                 val rightPane = new VBox {  
                     prefWidth_=(rootWidth * 0.75 + 12)
                     prefHeight_=(rootHeigth)
-                    //maxWidth_=(rootWidth * 0.75 - 5)
-                    //border_=(Border.stroke(Color.DarkKhaki))
+                    border = Border.stroke(Color.Black)
                     children = List(topPane, botPane)   // Children from TopPaneNextPrev, BotTabPane
                 }
                 val fullPane = new HBox {
-                    //border_=(Border.stroke(Color.Black))
                     background = Background.fill(Color.BlanchedAlmond)
                     children = List(leftPane, rightPane) // Children from above
                 }
@@ -64,7 +61,7 @@ object MainGUI extends JFXApp3:
                     children_=(List(menuBar, fullPane))
                 }
                 root = rootPane
-                //resizable_=(false)
+                resizable_=(false)
             }
         }
         primaryStage = this.stage
