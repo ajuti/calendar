@@ -407,7 +407,6 @@ object WindowGenerator:
                                 edited.setName(eventName)
                                 edited.setNewInterval(eventTime)
                                 edited.removeAllTags()
-                                println(tagsToBeAdded.split('-').size)
                                 tagsToBeAdded.split('-').foreach(x => if x.nonEmpty then edited.addTag(x))
                                 if extraInformation != "!empty!" then edited.addInfo(extraInformation) else ""
                                 edited.setColor(colPicker.getValue())

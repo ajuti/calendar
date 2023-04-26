@@ -334,7 +334,6 @@ val oneWeek = new Pane {
         tempPaneWeek.layoutX = (e.x / 130).floor * 130 + 47
         tempPaneWeek.layoutY = e.y
         tempPaneStart = (e.x, e.y)
-        println("Pressed: " + e.x)
 
     onMouseReleased = (e: MouseEvent) =>
         if !popupOpen && !clickToEdit && e.y > 30 && tempPaneStart._2 > 30 && e.y >= tempPaneStart._2 then

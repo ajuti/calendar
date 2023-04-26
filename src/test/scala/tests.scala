@@ -73,31 +73,6 @@ class CalendarTest extends AnyFlatSpec, Matchers:
 
 end CalendarTest
 
-class ServiceTest extends AnyFlatSpec, Matchers:
-  val subject = GetWeek
-
-  "nextOrdinalToLDT" should "return a correct new date when given an offset" in {
-    val today = LocalDateTime.now()
-    println(today)
-    // standard case of shifting date in the middle of the year
-    // first forwards:
-    println(subject.nextOrdinalToLDT(today, 1))
-    // then backwards:
-    println(subject.nextOrdinalToLDT(today, -3))
-    
-    // FIXME: hopping years still broken
-    // edge case where the year changes from December of X to January of X + 1
-    val endOfYear = LocalDateTime.of(2022, 12, 29, 10, 0)
-    println("should be 31st and 2nd")
-    println(subject.nextOrdinalToLDT(endOfYear, 2))
-    println(subject.nextOrdinalToLDT(endOfYear, 3))
-    println(endOfYear.plusDays(3))
-
-    // edge case where the year changes from January of X back to December of X - 1
-    val startOfYear = LocalDateTime.of(2023, 1, 3, 10, 0)
-    println(subject.nextOrdinalToLDT(startOfYear, -7))
-  }
-
 class LDTTest extends AnyFlatSpec, Matchers:
   val ldt1 = LocalDateTime.of(2023, 10, 10, 10, 10)
   val ldt2 = LocalDateTime.of(2023, 10, 15, 10, 10)

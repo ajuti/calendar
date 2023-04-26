@@ -24,8 +24,13 @@ class FileReader(filePath: String):
             try          
                 var oneLine = it.next().mkString(",")
                 while oneLine != null do
-                    events.addOne(parser.toEventFromString(oneLine))
-                    oneLine = it.next().mkString(",")    
+                    try 
+                        events.addOne(parser.toEventFromString(oneLine))
+                        oneLine = it.next().mkString(",")
+                    catch
+                       case e: IllegalEventFormat => 
+                            oneLine = it.next().mkString(",")
+                            println("Corrupted line, skipping...")     
                 end while
             catch
                 case e: ju.NoSuchElementException => println("Reading finished with exception")

@@ -5,6 +5,9 @@ import scala.collection.mutable.Buffer
 import java.time._
 import scalafx.scene.paint.Color
 
+
+case class IllegalEventFormat(description: String) extends Exception(description)
+
 class Parser():
 
     def eventToListOfStrings(event: Event): List[String] = 
@@ -12,8 +15,8 @@ class Parser():
     end eventToListOfStrings
 
     def toEventFromString(line: String): Event =
-        // name, time, stringTags, extra, color
         val elements = line.split(",")
+        if elements.size != 5 then throw IllegalEventFormat("Event read from CSV file is corrupted, skipping")
         val name = elements.head
         val start = LocalDateTime.parse(elements(1).takeWhile(_ != ';')).withNano(0)
         val end = LocalDateTime.parse(elements(1).dropWhile(_ != ';').tail).withNano(0)

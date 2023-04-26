@@ -64,7 +64,6 @@ val nextButton = new Button {
 val topPane = new HBox {
     alignment_=(Pos.Center)
     prefWidth_=(rootWidth * 0.75)
-    // prefHeight_=(rootHeigth * 0.1)
     children = List(prevButton, label1, nextButton)
     background = Background.fill(Color.DarkTurquoise)
 }

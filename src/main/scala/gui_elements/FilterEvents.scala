@@ -35,7 +35,6 @@ def scanTags(event: Event) =
 end scanTags
 
 def getCheckBoxes =
-    println(allTags)
     for i <- allTags yield
         new CheckBox {
             text = i

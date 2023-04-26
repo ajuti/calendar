@@ -26,14 +26,13 @@ val upload = new MenuItem("Upload") {
 val default = new MenuItem("Default")
 val light = new MenuItem("Light")
 val dark = new MenuItem("Dark")
-val saatana = new MenuItem("saatana")
 
 
 val menu1 = new Menu("Calendar") {
     items_=(List(upload, settings, exit))
 }
 val menu2 = new Menu("Theme") {
-    items_=(List(default, light, dark, saatana))
+    items_=(List(default, light, dark))
 }
 
 val menuBar = new MenuBar {
