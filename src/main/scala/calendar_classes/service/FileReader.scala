@@ -7,6 +7,7 @@ import scala.collection.mutable.Buffer
 import java.{util => ju}
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.time.DateTimeException
 
 class FileReader(filePath: String):
 
@@ -28,9 +29,19 @@ class FileReader(filePath: String):
                         events.addOne(parser.toEventFromString(oneLine))
                         oneLine = it.next().mkString(",")
                     catch
-                       case e: IllegalEventFormat => 
+                        case e: IllegalEventFormat => 
                             oneLine = it.next().mkString(",")
-                            println("Corrupted line, skipping...")     
+                            println("Corrupted line, skipping...")
+                        case e: DateTimeException =>
+                            oneLine = it.next().mkString(",")
+                            println("Corrupted line, skipping...")
+                        case e: NumberFormatException =>
+                            oneLine = it.next().mkString(",")
+                            println("Corrupted line, skipping...")
+                        case e: NullPointerException =>
+                            oneLine = it.next().mkString(",")
+                            println("Corrupted line, skipping...")
+
                 end while
             catch
                 case e: ju.NoSuchElementException => println("Reading finished with exception")

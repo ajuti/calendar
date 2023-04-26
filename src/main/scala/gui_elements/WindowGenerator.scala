@@ -434,6 +434,7 @@ object WindowGenerator:
                             case e: EmptyNameException => errorLabelName.visible = true
                         calendar1.upload()
                         updateCheckBoxes()
+                        updatePanes()
 
                 }
                 val cancelEvent = new Button {
@@ -448,6 +449,7 @@ object WindowGenerator:
                         popupOpen = false
                         calendar1.upload()
                         updateCheckBoxes()
+                        updatePanes()
                 }
                 val deleteEvent = new Button {
                     text = "Delete"
@@ -462,6 +464,7 @@ object WindowGenerator:
                         popupOpen = false
                         calendar1.upload()
                         updateCheckBoxes()
+                        updatePanes()
                 }
                 val popupRootPane = new Pane {
                     children += new Label("Name:") {
