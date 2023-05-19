@@ -271,11 +271,6 @@ object WindowGenerator:
                     )
                 }   
                 val endTimeCBoxMinutes = new ComboBox[String] {
-                    /*for c <- 0 to 3 do
-                        if c == 0 then
-                            +=(s"0$c")
-                        else
-                            +=(s"${c * 15}") */
                     value_=(
                         if editing then
                             if event.get.getInterval.`end`.getMinute() != 0 then

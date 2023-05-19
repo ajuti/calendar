@@ -65,9 +65,9 @@ def getGrid =
                 if (day > 0 && day <= daysInMonth) then
                     text = day.toString
                     if currentMonth == calendar1.getCurrentDate.getMonth() && day == calendar1.getCurrentDate.getDayOfMonth() then
-                        style_=("-fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3; -fx-background-color: aquamarine")
+                        style_=("-fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3; -fx-background-color: aquamarine; -fx-font-size: 10;")
                     else
-                        style_=("-fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3;")
+                        style_=("-fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3; -fx-font-size: 10;")
                     onAction = (e: ActionEvent) =>
                         calendar1.setDayAndWeek(LocalDateTime.of(currentYear, currentMonth, day, LocalDateTime.now().getHour(), LocalDateTime.now().getMinute()))
                         updatePanes()
@@ -79,6 +79,7 @@ def getGrid =
                     else 
                         text = (day - daysInMonth).toString()
                     opacity = 0.75
+                    style_=("-fx-border-color: black; -fx-border-radius: 3; -fx-background-radius: 3; -fx-font-size: 10;")
                     
                 prefWidth = 32
             }
